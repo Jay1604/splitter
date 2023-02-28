@@ -7,3 +7,5 @@ spring:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
             scope: read:public_repo
+server:
+  port: 9000
