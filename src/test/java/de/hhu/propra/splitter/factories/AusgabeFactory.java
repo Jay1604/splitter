@@ -2,10 +2,12 @@ package de.hhu.propra.splitter.factories;
 
 import de.hhu.propra.splitter.domain.Ausgabe;
 import de.hhu.propra.splitter.domain.Person;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Set;
 import org.javamoney.moneta.Money;
 
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class AusgabeFactory {
 
   private String beschreibung = "Some description";

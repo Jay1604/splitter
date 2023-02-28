@@ -3,7 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.9'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'checkstyle'
-	// id "com.github.spotbugs" version "5.0.13"
+	id "com.github.spotbugs" version "5.0.13"
 }
 
 group = 'de.hhu.propra'
@@ -58,13 +58,13 @@ checkstyle {
 	maxWarnings = 0
 }
 
-//spotbugs {
-//	effort = "max"
-//}
-//
-//tasks.matching {task -> task.name.startsWith('spotbugs')}.forEach {
-//	it.reports {
-//		html.enabled = true
-//		xml.enabled = false // spotbugs does not allow to generate a xml and html report at once https://github.com/spotbugs/spotbugs/issues/857
-//	}
-//}
+spotbugs {
+	effort = "max"
+}
+
+tasks.matching {task -> task.name.startsWith('spotbugs')}.forEach {
+	it.reports {
+		html.enabled = true
+		xml.enabled = false // spotbugs does not allow to generate a xml and html report at once https://github.com/spotbugs/spotbugs/issues/857
+	}
+}

@@ -3,10 +3,12 @@ package de.hhu.propra.splitter.factories;
 import de.hhu.propra.splitter.domain.Ausgabe;
 import de.hhu.propra.splitter.domain.Gruppe;
 import de.hhu.propra.splitter.domain.Person;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+@SuppressFBWarnings("EI_EXPOSE_REP2")
 public class GruppeFactory {
 
   private Set<Person> mitglieder = new HashSet<>(Set.of(
