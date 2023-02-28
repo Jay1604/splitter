@@ -1,8 +1,11 @@
 package de.hhu.propra.splitter.domain;
 
-import java.util.*;
-import java.util.Map.Entry;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import org.javamoney.moneta.Money;
 
 public class Gruppe {
@@ -74,8 +77,12 @@ public class Gruppe {
     Set<Ueberweisung> ueberweisungen = new HashSet<>();
 
     HashMap<Person, Money> debts = schuldenBerechnen();
+    findPerfectMatch(ueberweisungen, debts);
+    finishGreedy(ueberweisungen, debts);
+    return ueberweisungen;
+  }
 
-    // Find perfect matches
+  private void findPerfectMatch(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
     for (var dept : debts.entrySet()) {
       if (dept.getValue().isZero()) {
         continue;
@@ -104,19 +111,21 @@ public class Gruppe {
         debts.put(perfectMatch.get().getKey(), Money.of(0, "EUR"));
       }
     }
-    while (debts.values().stream().filter(value -> !value.isZero()).toList().size()>0 ){
+  }
+
+  private void finishGreedy(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
+    while (debts.values().stream().filter(value -> !value.isZero()).toList().size() > 0) {
       Optional<Entry<Person, Money>> max = debts.entrySet().stream().max(Entry.comparingByValue());
       Optional<Entry<Person, Money>> min = debts.entrySet().stream().min(Entry.comparingByValue());
       if (min.isPresent() && max.isPresent()) {
-        Money betrag=max.get().getValue();
+        Money betrag = max.get().getValue();
         if (min.get().getValue().abs().isLessThan(betrag)) {
-          betrag=min.get().getValue().abs();
+          betrag = min.get().getValue().abs();
         }
         ueberweisungen.add(new Ueberweisung(min.get().getKey(), max.get().getKey(), betrag));
         max.get().setValue(max.get().getValue().subtract(betrag));
         min.get().setValue(min.get().getValue().add(betrag));
       }
     }
-    return ueberweisungen;
   }
 }
