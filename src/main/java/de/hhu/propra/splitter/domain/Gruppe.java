@@ -1,10 +1,8 @@
 package de.hhu.propra.splitter.domain;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
+
 import org.javamoney.moneta.Money;
 
 public class Gruppe {
@@ -100,9 +98,10 @@ public class Gruppe {
               dept.getValue()
           ));
           // After perfect match both have 0 dept
-          debts.put(dept.getKey(), Money.of(0, "EUR"));
-          debts.put(perfectMatch.get().getKey(), Money.of(0, "EUR"));
+
         }
+        debts.put(dept.getKey(), Money.of(0, "EUR"));
+        debts.put(perfectMatch.get().getKey(), Money.of(0, "EUR"));
       }
     }
 
