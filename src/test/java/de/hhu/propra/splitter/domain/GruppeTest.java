@@ -7,12 +7,20 @@ import static org.assertj.core.api.Assertions.tuple;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
 import de.hhu.propra.splitter.factories.PersonFactory;
+import de.hhu.propra.splitter.services.AusgleichService;
 import java.util.Set;
 import org.javamoney.moneta.Money;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class GruppeTest {
+
+  @Autowired
+  AusgleichService ausgleichService;
 
   @Test
   @DisplayName("A legt B 20€ aus")
@@ -26,7 +34,7 @@ public class GruppeTest {
         )).withBetrag(Money.of(40, "EUR")).build()
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
         Ueberweisung::getSender,
@@ -42,7 +50,7 @@ public class GruppeTest {
   void test_02() {
     Gruppe gruppe = new GruppeFactory().build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
     assertThat(ausgleich).isEmpty();
   }
 
@@ -63,7 +71,7 @@ public class GruppeTest {
         )).withBetrag(Money.of(40, "EUR")).build()
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
     assertThat(ausgleich).extracting(
         Ueberweisung::getSender,
         Ueberweisung::getBetrag
@@ -94,7 +102,7 @@ public class GruppeTest {
         )).withBetrag(Money.of(30, "EUR")).build()
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
         Ueberweisung::getSender,
@@ -122,7 +130,7 @@ public class GruppeTest {
         )).withBetrag(Money.of(100, "EUR")).build()
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
         Ueberweisung::getSender,
@@ -166,7 +174,7 @@ public class GruppeTest {
 
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
         Ueberweisung::getSender,
@@ -182,7 +190,7 @@ public class GruppeTest {
   }
 
   @Test
-  @DisplayName("A legt B 20€ aus")
+  @DisplayName("Zirkeltest")
   public void test_07() {
     Person personA = new PersonFactory().withGitHubName("personA").build();
     Person personB = new PersonFactory().withGitHubName("personB").build();
@@ -200,7 +208,7 @@ public class GruppeTest {
         )).withBetrag(Money.of(40, "EUR")).build()
     )).build();
 
-    Set<Ueberweisung> ausgleich = gruppe.ausgleichen();
+    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).isEmpty();
   }
