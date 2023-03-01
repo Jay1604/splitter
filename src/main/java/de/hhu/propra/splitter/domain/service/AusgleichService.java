@@ -1,9 +1,9 @@
-package de.hhu.propra.splitter.services;
+package de.hhu.propra.splitter.domain.service;
 
-import de.hhu.propra.splitter.domain.Ausgabe;
-import de.hhu.propra.splitter.domain.Gruppe;
-import de.hhu.propra.splitter.domain.Person;
-import de.hhu.propra.splitter.domain.Ueberweisung;
+import de.hhu.propra.splitter.domain.model.Ausgabe;
+import de.hhu.propra.splitter.domain.model.Gruppe;
+import de.hhu.propra.splitter.domain.model.Person;
+import de.hhu.propra.splitter.domain.model.Ueberweisung;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;

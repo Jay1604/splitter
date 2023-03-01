@@ -1,12 +1,8 @@
-package de.hhu.propra.splitter.domain;
+package de.hhu.propra.splitter.domain.model;
 
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
-import org.javamoney.moneta.Money;
 
 public class Gruppe {
 

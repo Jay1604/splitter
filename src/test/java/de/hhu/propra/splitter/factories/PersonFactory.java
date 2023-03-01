@@ -1,6 +1,6 @@
 package de.hhu.propra.splitter.factories;
 
-import de.hhu.propra.splitter.domain.Person;
+import de.hhu.propra.splitter.domain.model.Person;
 
 public class PersonFactory {
 

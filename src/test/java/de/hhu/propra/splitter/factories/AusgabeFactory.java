@@ -1,7 +1,7 @@
 package de.hhu.propra.splitter.factories;
 
-import de.hhu.propra.splitter.domain.Ausgabe;
-import de.hhu.propra.splitter.domain.Person;
+import de.hhu.propra.splitter.domain.model.Ausgabe;
+import de.hhu.propra.splitter.domain.model.Person;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Set;

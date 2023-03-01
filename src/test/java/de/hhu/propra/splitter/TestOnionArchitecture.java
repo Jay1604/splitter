@@ -14,9 +14,9 @@ import com.tngtech.archunit.lang.ArchRule;
 public class TestOnionArchitecture {
   @ArchTest
   static final ArchRule isOnionArchitecture = onionArchitecture()
-      .domainModels("..domain..")
-      .domainServices("..services..")
-      .applicationServices("..web..")
+      .domainModels("..domain.model..")
+      .domainServices("..domain.service..")
+      .applicationServices("..services..")
       .adapter("database", "..persistence..");
 
 }

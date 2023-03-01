@@ -4,13 +4,15 @@ package de.hhu.propra.splitter.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
+import de.hhu.propra.splitter.domain.model.Gruppe;
+import de.hhu.propra.splitter.domain.model.Person;
+import de.hhu.propra.splitter.domain.model.Ueberweisung;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
 import de.hhu.propra.splitter.factories.PersonFactory;
-import de.hhu.propra.splitter.services.AusgleichService;
+import de.hhu.propra.splitter.domain.service.AusgleichService;
 import java.util.Set;
 import org.javamoney.moneta.Money;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

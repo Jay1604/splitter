@@ -1,4 +1,4 @@
-package de.hhu.propra.splitter.domain;
+package de.hhu.propra.splitter.domain.model;
 
 public class Person {
   private String gitHubName;

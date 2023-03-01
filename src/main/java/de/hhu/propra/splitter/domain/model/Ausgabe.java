@@ -1,4 +1,4 @@
-package de.hhu.propra.splitter.domain;
+package de.hhu.propra.splitter.domain.model;
 
 import java.util.HashSet;
 import java.util.Set;

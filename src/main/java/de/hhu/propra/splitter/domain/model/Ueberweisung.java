@@ -1,5 +1,6 @@
-package de.hhu.propra.splitter.domain;
+package de.hhu.propra.splitter.domain.model;
 
+import de.hhu.propra.splitter.domain.model.Person;
 import org.javamoney.moneta.Money;
 
 public class Ueberweisung {
