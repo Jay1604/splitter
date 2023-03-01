@@ -17,7 +17,12 @@ public class GruppeFactory {
   private String name = "Group 1";
   private boolean istOffen = true;
   private Set<Ausgabe> ausgaben = new HashSet<>();
+  private long id = 6;
 
+  public GruppeFactory withID(long id) {
+    this.id = id;
+    return this;
+  }
   public GruppeFactory withName(String name) {
     this.name = name;
     return this;
@@ -41,7 +46,7 @@ public class GruppeFactory {
 
   public Gruppe build() {
     Iterator<Person> userIterator = this.mitglieder.iterator();
-    Gruppe object = new Gruppe(userIterator.next(), this.name);
+    Gruppe object = new Gruppe(id, userIterator.next(), this.name);
     while (userIterator.hasNext()) {
       object.addMitglied(userIterator.next());
     }
