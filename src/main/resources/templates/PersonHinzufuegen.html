@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css"
+        th:href="@{css/bootstrap.min.css}">
+  <title>Splitter</title>
+</head>
+<body>
+<div class="container">
+  <header class="row">
+    <h1>
+      Person hinzufügen
+    </h1>
+  </header>
+  <main class="row">
+    <form th:action="gruppe/nutzerHinzufuegen" method="post">
+      <input type="hidden" th:value="*{id}" name="id">
+      <div>
+        <label for="inputName" class="form-label">Nutzername:</label>
+        <input type="text" class="form-control" id="inputName" name="name">
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Hinzufügen</button>
+    </form>
+  </main>
+</div>
+</body>
+</html>
