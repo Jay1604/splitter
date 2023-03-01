@@ -22,8 +22,8 @@
     <section class="mt-5">
       <h2>Offene Gruppen:</h2>
       <ul class="list-group" th:remove="all-but-first">
-        <li class="list-group-item list-group-item-action" th:each="offeneGruppe: ${offeneGruppen}" th:object="${gruppe}">
-          <a href="#" th:href="@{gruppe(nr=*{id})}"><span th:text="*{name}">Gruppe 1</span></a>
+        <li class="list-group-item list-group-item-action" th:each="offeneGruppe: ${offeneGruppen}">
+          <a href="#" th:href="@{gruppe(nr=*{offeneGruppe.getId})}"><span th:text="*{offeneGruppe.getName}">Gruppe 1</span></a>
         </li>
         <li class="list-group-item list-group-item-action">
           <a href="#"><span>Gruppe 2</span></a>
@@ -36,8 +36,8 @@
     <section class="mt-5">
       <h2>Geschlossene Gruppen</h2>
       <ul class="list-group" th:remove="all-but-first">
-        <li class="list-group-item list-group-item-action" th:each="geschlosseneGruppe: ${geschlosseneGruppen}" th:object="${gruppe}">
-          <a href="#" th:href="@{gruppe(nr=*{id})}"><span th:text="*{name}">Gruppe 1</span></a>
+        <li class="list-group-item list-group-item-action" th:each="geschlosseneGruppe: ${geschlosseneGruppen}">
+          <a href="#" th:href="@{gruppe(nr=*{geschlosseneGruppe.getId})}"><span th:text="*{geschlosseneGruppe.getName}">Gruppe 1</span></a>
         </li>
         <li class="list-group-item list-group-item-action">
           <a href="#"><span>Gruppe 2</span></a>
