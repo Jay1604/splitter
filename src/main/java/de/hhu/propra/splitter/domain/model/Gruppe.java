@@ -7,7 +7,6 @@ import java.util.Set;
 public class Gruppe {
 
 
-
   private Long id;
   private Set<Person> mitglieder;
   private String name;
@@ -49,6 +48,7 @@ public class Gruppe {
   public void setIstOffen(boolean istOffen) {
     this.istOffen = istOffen;
   }
+
   public Long getId() {
     return id;
   }

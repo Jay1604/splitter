@@ -17,6 +17,6 @@ public class TestOnionArchitecture {
       .domainModels("..domain.model..")
       .domainServices("..domain.service..")
       .applicationServices("..services..")
-      .adapter("database", "..persistence..");
-
+      .adapter("database", "..persistence..")
+      .adapter("web", "..web..");
 }

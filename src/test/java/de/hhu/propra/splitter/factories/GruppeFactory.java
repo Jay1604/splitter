@@ -19,10 +19,11 @@ public class GruppeFactory {
   private Set<Ausgabe> ausgaben = new HashSet<>();
   private long id = 6;
 
-  public GruppeFactory withID(long id) {
+  public GruppeFactory withId(long id) {
     this.id = id;
     return this;
   }
+
   public GruppeFactory withName(String name) {
     this.name = name;
     return this;
