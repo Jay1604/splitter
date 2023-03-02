@@ -1,8 +1,12 @@
 package de.hhu.propra.splitter.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
@@ -58,4 +62,23 @@ public class ControllerTest {
     assertThat(mvcResult.getResponse().getRedirectedUrl())
         .contains("oauth2/authorization/github");
 
-  }}
+  }
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/erstellen")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_5 () throws Exception {
+    MvcResult mvcResult = mvc.perform(post("/gruppe/erstellen").param("name","gruppe1").with(csrf())).andExpect(status().is3xxRedirection()).andReturn();
+
+    verify(gruppenService).addGruppe("nutzer1", "gruppe1");
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request /gruppe/erstellen mit leerem Inhalt")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_6 () throws Exception {
+    MvcResult mvcResult = mvc.perform(post("/gruppe/erstellen").param("name","").with(csrf())).andExpect(view().name("gruppeHinzufuegen")).andReturn();
+
+
+  }
+
+}

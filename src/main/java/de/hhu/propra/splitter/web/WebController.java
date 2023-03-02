@@ -29,7 +29,6 @@ public class WebController {
   @Autowired
   public WebController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
-          gruppenService.addGruppe("farie101", "Ausflug");
   }
 
   @GetMapping("/")
@@ -59,6 +58,10 @@ public class WebController {
 
     return "redirect:/";
 }
+
+
+
+
 
 
 
