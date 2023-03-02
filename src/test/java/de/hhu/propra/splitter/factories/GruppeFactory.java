@@ -1,9 +1,6 @@
 package de.hhu.propra.splitter.factories;
 
-import de.hhu.propra.splitter.domain.model.Ausgabe;
 import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
-import de.hhu.propra.splitter.testobjekte.AusgabeTestobjekt;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Iterator;

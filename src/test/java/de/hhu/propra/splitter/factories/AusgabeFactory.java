@@ -1,12 +1,8 @@
 package de.hhu.propra.splitter.factories;
 
-import de.hhu.propra.splitter.domain.model.Ausgabe;
-import de.hhu.propra.splitter.domain.model.Person;
-import de.hhu.propra.splitter.testobjekte.AusgabeTestobjekt;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Set;
-import org.assertj.core.util.Strings;
 import org.javamoney.moneta.Money;
 
 @SuppressFBWarnings("EI_EXPOSE_REP2")
