@@ -10,7 +10,6 @@ import de.hhu.propra.splitter.domain.model.Ueberweisung;
 import de.hhu.propra.splitter.domain.service.AusgleichService;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
-import de.hhu.propra.splitter.factories.PersonFactory;
 import java.util.Set;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -27,20 +26,21 @@ public class GruppeTest {
   @Test
   @DisplayName("A legt B 20€ aus")
   public void test_01() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB
-        )).withBetrag(Money.of(40, "EUR")).build()
-    )).build();
+    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personA
+            )).withBetrag(Money.of(40, "EUR")).build()
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
-        Ueberweisung::getSender,
-        Ueberweisung::getEmpfaenger,
+        (a -> a.getSender().getGitHubName()),
+        (a -> a.getEmpfaenger().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personB, personA, Money.of(20, "EUR"))
@@ -59,30 +59,31 @@ public class GruppeTest {
   @Test
   @DisplayName("2 Personen legen jeweils 2 Personen 20€ aus")
   public void test_03() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
-    Person personC = new PersonFactory().withGitHubName("personC").build();
-    Person personD = new PersonFactory().withGitHubName("personD").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
+    String personC = "nutzer3";
+    String personD = "nutzer4";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB
-        )).withBetrag(Money.of(40, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-            personD
-        )).withBetrag(Money.of(40, "EUR")).build()
-    )).build();
+    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC, personD))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personA
+            )).withBetrag(Money.of(40, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
+                personD, personC
+            )).withBetrag(Money.of(40, "EUR")).build()
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
     assertThat(ausgleich).extracting(
-        Ueberweisung::getSender,
+        (a -> a.getSender().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsOnly(
         tuple(personB, Money.of(20, "EUR")),
         tuple(personD, Money.of(20, "EUR"))
     );
     assertThat(ausgleich).extracting(
-        Ueberweisung::getEmpfaenger,
+        (a -> a.getEmpfaenger().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personA, Money.of(20, "EUR")),
@@ -94,21 +95,22 @@ public class GruppeTest {
   @Test
   @DisplayName("A legt B und C 10€ aus")
   public void test_04() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
-    Person personC = new PersonFactory().withGitHubName("personC").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
+    String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB, personC
-        )).withBetrag(Money.of(30, "EUR")).build()
-    )).build();
+    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personC, personA
+            )).withBetrag(Money.of(30, "EUR")).build()
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
-        Ueberweisung::getSender,
-        Ueberweisung::getEmpfaenger,
+        (a -> a.getSender().getGitHubName()),
+        (a -> a.getEmpfaenger().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personB, personA, Money.of(10, "EUR")),
@@ -119,24 +121,25 @@ public class GruppeTest {
   @Test
   @DisplayName("A legt B und C 10€ aus während B C 50€ auslegt ")
   public void test_05() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
-    Person personC = new PersonFactory().withGitHubName("personC").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
+    String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB, personC
-        )).withBetrag(Money.of(30, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personC
-        )).withBetrag(Money.of(100, "EUR")).build()
-    )).build();
+    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personC, personA
+            )).withBetrag(Money.of(30, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+                personC, personB
+            )).withBetrag(Money.of(100, "EUR")).build()
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
-        Ueberweisung::getSender,
-        Ueberweisung::getEmpfaenger,
+        (a -> a.getSender().getGitHubName()),
+        (a -> a.getEmpfaenger().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personC, personA, Money.of(20, "EUR")),
@@ -147,31 +150,32 @@ public class GruppeTest {
   @Test
   @DisplayName("Beispielaufgabe: Urlaub")
   public void test_06() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
-    Person personC = new PersonFactory().withGitHubName("personC").build();
-    Person personD = new PersonFactory().withGitHubName("personD").build();
-    Person personE = new PersonFactory().withGitHubName("personE").build();
-    Person personF = new PersonFactory().withGitHubName("personF").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
+    String personC = "nutzer3";
+    String personD = "nutzer4";
+    String personE = "nutzer5";
+    String personF = "nutzer6";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB, personC, personD, personE, personF
+    Gruppe gruppe = new GruppeFactory().withMitglieder(
+        Set.of(personA, personB, personC, personD, personE, personF)).withAusgaben(Set.of(
+          new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+            personB, personC, personD, personE, personF, personA
         )).withBetrag(Money.of(564, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personA
+          new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+            personA, personB
         )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-        new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personA, personD
+          new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+            personA, personD, personB
         )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-        new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-            personE, personF
+          new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
+            personE, personF, personC
         )).withBetrag(Money.of(82.11, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
-            personB, personC, personA, personE, personF
+          new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
+            personB, personC, personA, personE, personF, personD
         )).withBetrag(Money.of(96, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-            personB, personE
+          new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
+            personB, personE, personF
         )).withBetrag(Money.of(95.37, "EUR")).build()
 
     )).build();
@@ -179,8 +183,8 @@ public class GruppeTest {
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).extracting(
-        Ueberweisung::getSender,
-        Ueberweisung::getEmpfaenger,
+        (a -> a.getSender().getGitHubName()),
+        (a -> a.getEmpfaenger().getGitHubName()),
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personB, personA, Money.of(96.78, "EUR")),
@@ -194,24 +198,27 @@ public class GruppeTest {
   @Test
   @DisplayName("Zirkeltest")
   public void test_07() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
-    Person personC = new PersonFactory().withGitHubName("personC").build();
+    String personA = "nutzer1";
+    String personB = "nutzer2";
+    String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withAusgaben(Set.of(
-        new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB
-        )).withBetrag(Money.of(40, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personC
-        )).withBetrag(Money.of(40, "EUR")).build(),
-        new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-            personA
-        )).withBetrag(Money.of(40, "EUR")).build()
-    )).build();
+    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personA
+            )).withBetrag(Money.of(40, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+                personC, personB
+            )).withBetrag(Money.of(40, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
+                personA, personC
+            )).withBetrag(Money.of(40, "EUR")).build()
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
     assertThat(ausgleich).isEmpty();
   }
+
+
 }

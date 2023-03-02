@@ -24,11 +24,11 @@ public class WebController {
   @Autowired
   public WebController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
-    Gruppe gruppe1 = new Gruppe(1L, new Person("..."), "Ausflug");
-    Gruppe gruppe2 = new Gruppe(2L, new Person("..."), "Kein Ausflug mehr");
-    gruppe2.setIstOffen(false);
-    gruppenService.addGruppe(gruppe1);
-    gruppenService.addGruppe(gruppe2);
+      //    Gruppe gruppe1 = new Gruppe(1L, new Person("..."), "Ausflug");
+      //    Gruppe gruppe2 = new Gruppe(2L, new Person("..."), "Kein Ausflug mehr");
+      //    gruppe2.setIstOffen(false);
+      //    gruppenService.addGruppe(gruppe1);
+      //    gruppenService.addGruppe(gruppe2);
   }
 
   @GetMapping("/")

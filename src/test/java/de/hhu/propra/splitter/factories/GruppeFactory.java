@@ -3,6 +3,7 @@ package de.hhu.propra.splitter.factories;
 import de.hhu.propra.splitter.domain.model.Ausgabe;
 import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.domain.model.Person;
+import de.hhu.propra.splitter.testobjekte.AusgabeTestobjekt;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,12 +12,10 @@ import java.util.Set;
 @SuppressFBWarnings("EI_EXPOSE_REP2")
 public class GruppeFactory {
 
-  private Set<Person> mitglieder = new HashSet<>(Set.of(
-      new PersonFactory().build()
-  ));
+  private Set<String> mitglieder = new HashSet<>(Set.of("nutzer1"));
   private String name = "Group 1";
   private boolean istOffen = true;
-  private Set<Ausgabe> ausgaben = new HashSet<>();
+  private Set<AusgabeTestobjekt> ausgaben = new HashSet<>();
   private long id = 6;
 
   public GruppeFactory withId(long id) {
@@ -34,25 +33,26 @@ public class GruppeFactory {
     return this;
   }
 
-  public GruppeFactory withMitglieder(Set<Person> mitglieder) {
+  public GruppeFactory withMitglieder(Set<String> mitglieder) {
     assert mitglieder.size() > 0;
     this.mitglieder = mitglieder;
     return this;
   }
 
-  public GruppeFactory withAusgaben(Set<Ausgabe> ausgaben) {
+  public GruppeFactory withAusgaben(Set<AusgabeTestobjekt> ausgaben) {
     this.ausgaben = ausgaben;
     return this;
   }
 
   public Gruppe build() {
-    Iterator<Person> userIterator = this.mitglieder.iterator();
+    Iterator<String> userIterator = this.mitglieder.iterator();
     Gruppe object = new Gruppe(id, userIterator.next(), this.name);
     while (userIterator.hasNext()) {
       object.addMitglied(userIterator.next());
     }
-    for (Ausgabe debit : this.ausgaben) {
-      object.addAusgabe(debit);
+    for (AusgabeTestobjekt debit : this.ausgaben) {
+      object.addAusgabe(debit.beschreibung(), debit.betrag(), debit.glauebiger(),
+          debit.schuldner());
     }
     return object;
   }

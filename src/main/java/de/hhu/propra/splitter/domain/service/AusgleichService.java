@@ -17,12 +17,12 @@ public class AusgleichService {
   private HashMap<Person, Money> schuldenBerechnen(Gruppe gruppe) {
     HashMap<Person, Money> debts = new HashMap<>();
     for (Ausgabe ausgabe : gruppe.getAusgaben()) {
-      Money beitrag = ausgabe.getBetrag().divide(ausgabe.getSchuldner().size() + 1);
+      Money beitrag = ausgabe.getBetrag().divide(ausgabe.getSchuldner().size());
       debts.put(ausgabe.getGlaeubiger(),
           debts.getOrDefault(
               ausgabe.getGlaeubiger(),
               Money.of(0, "EUR")
-          ).add(ausgabe.getBetrag()).subtract(beitrag)
+          ).add(ausgabe.getBetrag())
       );
       for (Person schuldner : ausgabe.getSchuldner()) {
         debts.put(schuldner,

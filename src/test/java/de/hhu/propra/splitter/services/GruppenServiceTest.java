@@ -6,7 +6,6 @@ import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
-import de.hhu.propra.splitter.factories.PersonFactory;
 import java.util.Set;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,7 @@ public class GruppenServiceTest {
   @Test
   @DisplayName("Gruppen werden ausgegeben")
   void test_1() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
+    String personA = "personA";
     Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA)).build();
 
     GruppenService gruppenService = new GruppenService();
@@ -31,7 +30,7 @@ public class GruppenServiceTest {
   @Test
   @DisplayName("Gruppen werden nicht ausgegeben, wenn nicht Mitglied")
   void test_2() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
+    String personA = "personA";
     Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA)).build();
 
     GruppenService gruppenService = new GruppenService();
@@ -45,8 +44,8 @@ public class GruppenServiceTest {
   @Test
   @DisplayName("Nur eigene Gruppen werden ausgegeben. Und mehrere Personen sind in den Gruppen")
   void test_3() {
-    Person personA = new PersonFactory().withGitHubName("personA").build();
-    Person personB = new PersonFactory().withGitHubName("personB").build();
+    String personA = "personA";
+    String personB = "personB";
     Gruppe gruppe1 = new GruppeFactory().withMitglieder(Set.of(personA, personB)).build();
     Gruppe gruppe2 = new GruppeFactory().withMitglieder(Set.of(personB)).build();
 
