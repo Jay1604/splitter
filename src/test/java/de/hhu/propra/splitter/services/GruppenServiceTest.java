@@ -17,25 +17,24 @@ public class GruppenServiceTest {
   @DisplayName("Gruppen werden ausgegeben")
   void test_1() {
     String personA = "personA";
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA)).build();
-
     GruppenService gruppenService = new GruppenService();
 
-    gruppenService.addGruppe(gruppe);
+    gruppenService.addGruppe(personA, "gruppe1");
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
 
-    assertThat(gruppeForPersonA).containsExactly(gruppe);
+    assertThat(gruppeForPersonA).extracting(
+        Gruppe::getName
+    ).containsExactly("gruppe1");
   }
 
   @Test
   @DisplayName("Gruppen werden nicht ausgegeben, wenn nicht Mitglied")
   void test_2() {
     String personA = "personA";
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA)).build();
 
     GruppenService gruppenService = new GruppenService();
 
-    gruppenService.addGruppe(gruppe);
+    gruppenService.addGruppe(personA, "gruppe1");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
 
     assertThat(gruppeForPersonB).isEmpty();
@@ -46,17 +45,22 @@ public class GruppenServiceTest {
   void test_3() {
     String personA = "personA";
     String personB = "personB";
-    Gruppe gruppe1 = new GruppeFactory().withMitglieder(Set.of(personA, personB)).build();
-    Gruppe gruppe2 = new GruppeFactory().withMitglieder(Set.of(personB)).build();
 
     GruppenService gruppenService = new GruppenService();
 
-    gruppenService.addGruppe(gruppe1);
-    gruppenService.addGruppe(gruppe2);
+    Long gruppe1Id = gruppenService.addGruppe(personA, "gruppe1");
+    Long gruppe2Id = gruppenService.addGruppe(personB, "gruppe2");
+    gruppenService.addUser(personB, gruppe1Id);
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
 
-    assertThat(gruppeForPersonA).containsExactly(gruppe1);
-    assertThat(gruppeForPersonB).containsExactlyInAnyOrder(gruppe1, gruppe2);
+    assertThat(gruppeForPersonA).extracting(
+        Gruppe::getName
+    ).containsExactly("gruppe1");
+    assertThat(gruppeForPersonB).extracting(
+        Gruppe::getName
+    ).containsExactlyInAnyOrder("gruppe1", "gruppe2");
   }
+
+
 }

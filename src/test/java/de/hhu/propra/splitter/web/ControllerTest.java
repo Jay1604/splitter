@@ -41,4 +41,21 @@ public class ControllerTest {
         .contains("oauth2/authorization/github");
 
   }
-}
+
+  @Test
+  @WithMockOAuth2User(login = "nutzer1")
+  @DisplayName("Route /gruppe/erstellen gibt 200 zurück")
+  void test_3() throws Exception {
+    mvc.perform(get("/gruppe/erstellen")).andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("Die private Seite /gruppe/erstellen ist für nicht-authentifizierte User nicht erreichbar")
+  void test_4() throws Exception {
+    MvcResult mvcResult = mvc.perform(get("/gruppe/erstellen"))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
+    assertThat(mvcResult.getResponse().getRedirectedUrl())
+        .contains("oauth2/authorization/github");
+
+  }}

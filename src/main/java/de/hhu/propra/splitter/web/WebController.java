@@ -5,14 +5,19 @@ import static java.util.function.Predicate.not;
 import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.services.GruppenService;
+import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class WebController {
@@ -24,11 +29,7 @@ public class WebController {
   @Autowired
   public WebController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
-      //    Gruppe gruppe1 = new Gruppe(1L, new Person("..."), "Ausflug");
-      //    Gruppe gruppe2 = new Gruppe(2L, new Person("..."), "Kein Ausflug mehr");
-      //    gruppe2.setIstOffen(false);
-      //    gruppenService.addGruppe(gruppe1);
-      //    gruppenService.addGruppe(gruppe2);
+          gruppenService.addGruppe("farie101", "Ausflug");
   }
 
   @GetMapping("/")
@@ -44,6 +45,24 @@ public class WebController {
     m.addAttribute("geschlosseneGruppen", geschlosseneGruppen);
     return "index";
   }
+
+  @GetMapping("/gruppe/erstellen")
+  public String gruppeerstellen(){
+    return "gruppeHinzufuegen";
+  }
+@PostMapping("/gruppe/erstellen")
+  public String gruppeHinzufuegen(Model m, @Valid GruppeErstellenForm form, BindingResult bindingResult, OAuth2AuthenticationToken token){
+    if(bindingResult.hasErrors()){
+      return "gruppeHinzufuegen";
+    }
+    gruppenService.addGruppe(token.getPrincipal().getAttribute("login"), HtmlUtils.htmlEscape(form.name()));
+
+    return "redirect:/";
+}
+
+
+
+
 
 
 }
