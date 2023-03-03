@@ -43,4 +43,25 @@ public class GruppenService {
 
     gruppe.addMitglied(githubName);
   }
+
+  public Gruppe getGruppeForGithubName(String githubName, long id) {
+    return this.getGruppen().stream().filter(
+        gruppe -> gruppe.getMitglieder()
+            .stream()
+            .map(Person::getGitHubName)
+            .toList()
+            .contains(githubName) && gruppe.getId().equals(id)
+    ).findFirst().orElseThrow(GruppeNotFound::new);
+  }
+
+  public void gruppeschliessen(long gruppenId) {
+    getGruppeforGruppenId(gruppenId).setIstOffen(false);
+  }
+
+  private Gruppe getGruppeforGruppenId(long gruppenId) {
+    return this.getGruppen().stream().filter(
+        gruppe -> gruppe.getId().equals(gruppenId)
+    ).findFirst().orElseThrow(GruppeNotFound::new);
+  }
 }
+

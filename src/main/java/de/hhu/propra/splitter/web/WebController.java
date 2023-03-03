@@ -9,6 +9,7 @@ import de.hhu.propra.splitter.domain.service.AusgleichService;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
+import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Set;
@@ -35,7 +36,6 @@ public class WebController {
   @Autowired
   public WebController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
-    this.gruppenService.addGruppe("ThiloSavaryHHU", "Gruppe 1"); // TODO: Entfernen
   }
 
   @GetMapping("/")
@@ -56,7 +56,7 @@ public class WebController {
   }
 
   @GetMapping("/gruppe/erstellen")
-  public String gruppeerstellen(
+  public String gruppeErstellenForm(
       GruppeErstellenForm gruppeErstellenForm
   ) {
     return "gruppeHinzufuegen";
@@ -85,14 +85,8 @@ public class WebController {
       OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId
   ) {
-    Set<Gruppe> gruppenForUser = gruppenService.getGruppenForGithubName(
-        token.getPrincipal().getAttribute("login"));
-    Gruppe gruppe = gruppenForUser
-        .stream()
-        .filter(a -> a.getId().equals(gruppeId))
-        .findFirst()
-        .orElseThrow(GruppeNotFound::new);
-    System.out.println(gruppe.getMitglieder());
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), gruppeId);
     Set<WebAusgabe> history = gruppe.getAusgaben().stream().map(
         e -> new WebAusgabe(
             e.getBeschreibung(),
@@ -111,4 +105,41 @@ public class WebController {
     m.addAttribute("ueberweisungen", ueberweisungen);
     return "gruppeDetails";
   }
+
+  @GetMapping("gruppe/schliessen")
+  public String gruppeschliessenForm(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId) {
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), gruppeId);
+    if (gruppe.isIstOffen()) {
+      m.addAttribute("id", gruppeId);
+      return "gruppeSchliessen";
+    }
+    return "redirect:/gruppe?nr=" + gruppeId;
+  }
+
+  @PostMapping("gruppe/schliessen")
+  public String gruppeschliessen(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @Valid
+      GruppenSchliessenForm form,
+      BindingResult bindingResult,
+      HttpServletResponse response
+  ) {
+    if (bindingResult.hasErrors()) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return "gruppeSchliessen";
+    }
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), form.id());
+    if (!gruppe.isIstOffen()) {
+      throw new GruppeNotFound();
+    }
+    gruppenService.gruppeschliessen(form.id());
+    return "redirect:/gruppe?nr=" + form.id();
+  }
+
 }

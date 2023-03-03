@@ -15,12 +15,12 @@
     </h1>
   </header>
   <main class="row">
-    <form th:action="gruppe/schliessen" method="post">
+    <form th:action="@{/gruppe/schliessen}" method="post">
       <input type="hidden" th:value="*{id}" name="id">
       <div>
         <span>Bist du dir sicher, dass du die Gruppe schließen willst? Danach können keine weiteren Transaktionen mehr hinzugefügt werden!</span>
       </div>
-      <a class="btn btn-secondary mt-2" th:href="@{gruppe(nr=*{id})}">Abbrechen</a>
+      <a class="btn btn-secondary mt-2" th:href="@{/gruppe(nr=*{id})}">Abbrechen</a>
       <button type="submit" class="btn btn-danger mt-2">Gruppe schließen</button>
     </form>
   </main>
