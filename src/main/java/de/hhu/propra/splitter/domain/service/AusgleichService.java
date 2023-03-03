@@ -19,7 +19,10 @@ public class AusgleichService {
   private HashMap<Person, Money> schuldenBerechnen(Gruppe gruppe) {
     HashMap<Person, Money> debts = new HashMap<>();
     for (Ausgabe ausgabe : gruppe.getAusgaben()) {
-      Money anteil = ausgabe.getBetrag().divide(ausgabe.getSchuldner().size());
+      Money[] anteilAndRemainder = ausgabe.getBetrag()
+          .divideAndRemainder(ausgabe.getSchuldner().size());
+      Money anteil = anteilAndRemainder[0];
+      Money remainder = anteilAndRemainder[1];
       debts.put(ausgabe.getGlaeubiger(),
           debts.getOrDefault(
               ausgabe.getGlaeubiger(),
@@ -34,6 +37,20 @@ public class AusgleichService {
             ).subtract(anteil)
         );
       }
+      while (!remainder.isZero()) {
+        for (Person schuldner : ausgabe.getSchuldner()) {
+          if (remainder.isZero()) {
+            break;
+          }
+          remainder = remainder.subtract(Money.of(0.01, "EUR"));
+          debts.put(schuldner,
+              debts.getOrDefault(
+                  schuldner,
+                  Money.of(0, "EUR")
+              ).subtract(Money.of(0.01, "EUR"))
+          );
+        }
+      }
     }
 
     return debts;
@@ -41,7 +58,6 @@ public class AusgleichService {
 
   public Set<Ueberweisung> ausgleichen(Gruppe gruppe) {
     Set<Ueberweisung> ueberweisungen = new HashSet<>();
-
     HashMap<Person, Money> debts = schuldenBerechnen(gruppe);
     while (debts.values().stream().filter(value -> !value.isZero()).toList().size() > 0) {
       findPerfectMatch(ueberweisungen, debts);
