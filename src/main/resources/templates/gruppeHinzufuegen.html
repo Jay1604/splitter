@@ -15,10 +15,21 @@
     </h1>
   </header>
   <main class="row">
-    <form th:action="@{/gruppe/erstellen}" method="post">
-      <div>
+    <form th:action="@{/gruppe/erstellen}" method="post" th:object="${gruppeErstellenForm}">
+      <div th:class="${#fields.hasErrors('name')}? 'is-invalid'">
         <label for="inputName" class="form-label">Gruppenname:</label>
-        <input type="text" class="form-control" id="inputName" name="name">
+        <input
+            type="text"
+            class="form-control"
+            id="inputName"
+            name="name"
+            th:class="'form-control ' + ${#fields.hasErrors('name')? 'is-invalid' : ''}"
+        >
+        <div
+            class="invalid-feedback"
+            th:if="${#fields.hasErrors('name')}"
+            th:errors="*{name}">
+        </div>
       </div>
       <button type="submit" class="btn btn-primary mt-2">Erstellen</button>
     </form>

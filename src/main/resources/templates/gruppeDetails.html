@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css"
+        th:href="@{/css/bootstrap.min.css}">
+  <title>Splitter</title>
+</head>
+<body>
+<div class="container">
+  <header class="row">
+    <h1 th:text="${gruppe.name}">Urlaub</h1>
+  </header>
+  <main class="row">
+    <div class="col text-end">
+      <div class="btn-group" th:if="${gruppe.isIstOffen()}">
+        <a th:href="@{gruppe/schliessen(nr=${gruppe.id})}" class="btn btn-outline-primary">Gruppe
+          schließen</a>
+        <a th:href="@{gruppe/nutzerHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Nutzer
+          hinzufügen</a>
+        <a th:href="@{gruppe/neueTransaktion(nr=${gruppe.id})}" class="btn btn-outline-primary">Neue
+          Transaktion</a>
+      </div>
+    </div>
+    <section class="mt-5">
+      <h2>Nutzer</h2>
+      <ul class="list-group" th:remove="all-but-first">
+        <li class="list-group-item list-group-item-action"
+            th:each="nutzer: ${gruppe.getMitglieder()}">
+          <span th:text="${nutzer.getGitHubName()}">Andrew</span>
+        </li>
+        <li class="list-group-item list-group-item-action">
+          <span>Jan</span>
+        </li>
+        <li class="list-group-item list-group-item-action">
+          <span>Raphael</span>
+        </li>
+        <li class="list-group-item list-group-item-action">
+          <span>Jan-Niklas</span>
+        </li>
+      </ul>
+    </section>
+    <section class="mt-5">
+      <h2>Historie</h2>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Von</th>
+          <th scope="col">Betrag (€)</th>
+          <th scope="col">An</th>
+          <th scope="col">Aktivität</th>
+        </tr>
+        </thead>
+        <tbody th:remove="all-but-first">
+        <tr th:each="ausgabe: ${history}">
+          <td th:text="${ausgabe.glaeubiger()}">Andrew</td>
+          <td th:text="${ausgabe.betrag()}">20</td>
+          <td th:text="${ausgabe.schuldner()}" style="max-width: 200px;">Raphael</td>
+          <td th:text="${ausgabe.beschreibung()}">Programmieren</td>
+        </tr>
+        <tr>
+          <td>Jan</td>
+          <td>10</td>
+          <td>Jan-Niklas</td>
+          <td>Vorlesung</td>
+        </tr>
+        <tr>
+          <td>Andrew</td>
+          <td>200</td>
+          <td>Jan, Raphael, Jan-Niklas, Max Mustermann</td>
+          <td>Übung</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="mt-5">
+      <h2>Ausgleich</h2>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">Von</th>
+          <th scope="col">Betrag (€)</th>
+          <th scope="col">An</th>
+        </tr>
+        </thead>
+        <tbody th:remove="all-but-first">
+        <tr th:each="ueberweisung: ${ueberweisungen}">
+          <td th:text="${ueberweisung.getSender().getGitHubName()}">Andrew</td>
+          <td th:text="${ueberweisung.getBetrag().getNumber()}">20</td>
+          <td th:text="${ueberweisung.getEmpfaenger().getGitHubName()}">Raphael</td>
+        </tr>
+        <tr>
+          <td>Jan</td>
+          <td>10</td>
+          <td>Jan-Niklas</td>
+        </tr>
+        <tr>
+          <td>Andrew</td>
+          <td>200</td>
+          <td>Jan</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+</body>
+</html>
