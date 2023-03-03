@@ -5,13 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.domain.model.Ueberweisung;
 import de.hhu.propra.splitter.domain.service.AusgleichService;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
 import java.util.Set;
-import org.assertj.core.groups.Tuple;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +28,8 @@ public class GruppeTest {
     String personA = "nutzer1";
     String personB = "nutzer2";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA
@@ -65,7 +64,8 @@ public class GruppeTest {
     String personC = "nutzer3";
     String personD = "nutzer4";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC, personD))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB, personC, personD))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA
@@ -100,7 +100,8 @@ public class GruppeTest {
     String personB = "nutzer2";
     String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB, personC))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personC, personA
@@ -126,7 +127,8 @@ public class GruppeTest {
     String personB = "nutzer2";
     String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB, personC))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personC, personA
@@ -149,15 +151,14 @@ public class GruppeTest {
   }
 
 
-
-
   @Test
   @DisplayName("Testszenario 1: Summieren von Auslagen")
-  void test_08(){
+  void test_08() {
     String personA = "nutzer1";
     String personB = "nutzer2";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA
@@ -178,13 +179,15 @@ public class GruppeTest {
     );
 
   }
+
   @Test
   @DisplayName("Testszenario 2: Ausgleich")
-  void test_09(){
+  void test_09() {
     String personA = "nutzer1";
     String personB = "nutzer2";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA
@@ -205,13 +208,15 @@ public class GruppeTest {
     );
 
   }
+
   @Test
   @DisplayName("Szenario 3: Zahlung ohne eigene Beteiligung")
-  void test_10(){
+  void test_10() {
     String personA = "nutzer1";
     String personB = "nutzer2";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB
@@ -232,6 +237,7 @@ public class GruppeTest {
     );
 
   }
+
   @Test
   @DisplayName("Szenario 4: Ringausgleich")
   public void test_07() {
@@ -239,7 +245,8 @@ public class GruppeTest {
     String personB = "nutzer2";
     String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB, personC))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA
@@ -264,7 +271,8 @@ public class GruppeTest {
     String personB = "nutzer2";
     String personC = "nutzer3";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(Set.of(personA, personB, personC))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(Set.of(personA, personB, personC))
         .withAusgaben(Set.of(
             new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
                 personB, personA, personC
@@ -285,9 +293,10 @@ public class GruppeTest {
         Ueberweisung::getBetrag
     ).containsExactlyInAnyOrder(
         tuple(personB, personA, Money.of(30, "EUR")),
-        tuple(personB, personC, Money.of(20,"EUR"))
+        tuple(personB, personC, Money.of(20, "EUR"))
     );
   }
+
   @Test
   @DisplayName("Szenario 6: Beispielaufgabe: Urlaub")
   public void test_06() {
@@ -298,28 +307,30 @@ public class GruppeTest {
     String personE = "nutzer5";
     String personF = "nutzer6";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(
-        Set.of(personA, personB, personC, personD, personE, personF)).withAusgaben(Set.of(
-          new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-            personB, personC, personD, personE, personF, personA
-        )).withBetrag(Money.of(564, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personA, personB
-        )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-          new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-            personA, personD, personB
-        )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-          new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-            personE, personF, personC
-        )).withBetrag(Money.of(82.11, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
-            personB, personC, personA, personE, personF, personD
-        )).withBetrag(Money.of(96, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-            personB, personE, personF
-        )).withBetrag(Money.of(95.37, "EUR")).build()
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(
+            Set.of(personA, personB, personC, personD, personE, personF))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
+                personB, personC, personD, personE, personF, personA
+            )).withBetrag(Money.of(564, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+                personA, personB
+            )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
+            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
+                personA, personD, personB
+            )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
+            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
+                personE, personF, personC
+            )).withBetrag(Money.of(82.11, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
+                personB, personC, personA, personE, personF, personD
+            )).withBetrag(Money.of(96, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
+                personB, personE, personF
+            )).withBetrag(Money.of(95.37, "EUR")).build()
 
-    )).build();
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 
@@ -348,33 +359,34 @@ public class GruppeTest {
     String personG = "nutzer7";
 
     Gruppe gruppe = new GruppeFactory().withMitglieder(
-        Set.of(personA, personB, personC, personD, personE, personF, personG)).withAusgaben(Set.of(
-          new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
-             personD, personF
-        )).withBetrag(Money.of(20, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
-             personB
-        )).withBetrag(Money.of(10, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
-            personA, personC, personE
-        )).withBetrag(Money.of(75, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-            personA, personF
-        )).withBetrag(Money.of(50, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
-             personD
-        )).withBetrag(Money.of(40, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-            personB, personF
-        )).withBetrag(Money.of(40, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-              personC
-        )).withBetrag(Money.of(5, "EUR")).build(),
-          new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
-            personA
-        )).withBetrag(Money.of(30, "EUR")).build()
+            Set.of(personA, personB, personC, personD, personE, personF, personG))
+        .withAusgaben(Set.of(
+            new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
+                personD, personF
+            )).withBetrag(Money.of(20, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
+                personB
+            )).withBetrag(Money.of(10, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
+                personA, personC, personE
+            )).withBetrag(Money.of(75, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
+                personA, personF
+            )).withBetrag(Money.of(50, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
+                personD
+            )).withBetrag(Money.of(40, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
+                personB, personF
+            )).withBetrag(Money.of(40, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
+                personC
+            )).withBetrag(Money.of(5, "EUR")).build(),
+            new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
+                personA
+            )).withBetrag(Money.of(30, "EUR")).build()
 
-    )).build();
+        )).build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
 

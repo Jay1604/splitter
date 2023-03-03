@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,11 +31,12 @@ public class ControllerTest {
   @WithMockOAuth2User(login = "nutzer1")
   @DisplayName("Route / gibt 200 zurück")
   void test_1() throws Exception {
-    mvc.perform(get("/")).andExpect(status().isOk());
+    mvc.perform(get("/"))
+        .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("Die private Seite ist für nicht-authentifizierte User nicht erreichbar")
+  @DisplayName("Die private Seite / ist für nicht-authentifizierte User nicht erreichbar")
   void test_2() throws Exception {
     MvcResult mvcResult = mvc.perform(get("/"))
         .andExpect(status().is3xxRedirection())
@@ -50,11 +50,13 @@ public class ControllerTest {
   @WithMockOAuth2User(login = "nutzer1")
   @DisplayName("Route /gruppe/erstellen gibt 200 zurück")
   void test_3() throws Exception {
-    mvc.perform(get("/gruppe/erstellen")).andExpect(status().isOk());
+    mvc.perform(get("/gruppe/erstellen"))
+        .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("Die private Seite /gruppe/erstellen ist für nicht-authentifizierte User nicht erreichbar")
+  @DisplayName("Die private Seite /gruppe/erstellen ist für "
+      + "nicht-authentifizierte User nicht erreichbar")
   void test_4() throws Exception {
     MvcResult mvcResult = mvc.perform(get("/gruppe/erstellen"))
         .andExpect(status().is3xxRedirection())
@@ -63,11 +65,16 @@ public class ControllerTest {
         .contains("oauth2/authorization/github");
 
   }
+
   @Test
   @DisplayName("Testen des Post Request in /gruppe/erstellen")
   @WithMockOAuth2User(login = "nutzer1")
-  void test_5 () throws Exception {
-    MvcResult mvcResult = mvc.perform(post("/gruppe/erstellen").param("name","gruppe1").with(csrf())).andExpect(status().is3xxRedirection()).andReturn();
+  void test_5() throws Exception {
+    mvc.perform(
+        post("/gruppe/erstellen")
+            .param("name", "gruppe1")
+            .with(csrf())
+    ).andExpect(status().is3xxRedirection()).andReturn();
 
     verify(gruppenService).addGruppe("nutzer1", "gruppe1");
   }
@@ -75,8 +82,13 @@ public class ControllerTest {
   @Test
   @DisplayName("Testen des Post Request /gruppe/erstellen mit leerem Inhalt")
   @WithMockOAuth2User(login = "nutzer1")
-  void test_6 () throws Exception {
-    MvcResult mvcResult = mvc.perform(post("/gruppe/erstellen").param("name","").with(csrf())).andExpect(view().name("gruppeHinzufuegen")).andReturn();
+  void test_6() throws Exception {
+    mvc.perform(
+            post("/gruppe/erstellen")
+                .param("name", "")
+                .with(csrf())
+        ).andExpect(view().name("gruppeHinzufuegen"))
+        .andReturn();
 
 
   }

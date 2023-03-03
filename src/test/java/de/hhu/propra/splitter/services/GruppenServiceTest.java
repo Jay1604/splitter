@@ -3,11 +3,7 @@ package de.hhu.propra.splitter.services;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
-import de.hhu.propra.splitter.factories.AusgabeFactory;
-import de.hhu.propra.splitter.factories.GruppeFactory;
 import java.util.Set;
-import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +45,7 @@ public class GruppenServiceTest {
     GruppenService gruppenService = new GruppenService();
 
     Long gruppe1Id = gruppenService.addGruppe(personA, "gruppe1");
-    Long gruppe2Id = gruppenService.addGruppe(personB, "gruppe2");
+    gruppenService.addGruppe(personB, "gruppe2");
     gruppenService.addUser(personB, gruppe1Id);
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");

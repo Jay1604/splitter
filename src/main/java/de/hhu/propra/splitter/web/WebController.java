@@ -3,7 +3,6 @@ package de.hhu.propra.splitter.web;
 import static java.util.function.Predicate.not;
 
 import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -36,9 +35,12 @@ public class WebController {
     Set<Gruppe> gruppen = gruppenService.getGruppenForGithubName(
         auth.getPrincipal().getAttribute("login"));
 
-    var geschlosseneGruppen = gruppen.stream().filter(not(Gruppe::isIstOffen))
+    var geschlosseneGruppen = gruppen.stream()
+        .filter(not(Gruppe::isIstOffen))
         .collect(Collectors.toSet());
-    var offeneGruppen = gruppen.stream().filter(Gruppe::isIstOffen).collect(Collectors.toSet());
+    var offeneGruppen = gruppen.stream()
+        .filter(Gruppe::isIstOffen)
+        .collect(Collectors.toSet());
 
     m.addAttribute("offeneGruppen", offeneGruppen);
     m.addAttribute("geschlosseneGruppen", geschlosseneGruppen);
@@ -46,26 +48,23 @@ public class WebController {
   }
 
   @GetMapping("/gruppe/erstellen")
-  public String gruppeerstellen(){
+  public String gruppeerstellen() {
     return "gruppeHinzufuegen";
   }
-@PostMapping("/gruppe/erstellen")
-  public String gruppeHinzufuegen(Model m, @Valid GruppeErstellenForm form, BindingResult bindingResult, OAuth2AuthenticationToken token){
-    if(bindingResult.hasErrors()){
+
+  @PostMapping("/gruppe/erstellen")
+  public String gruppeHinzufuegen(
+      Model m,
+      @Valid GruppeErstellenForm form,
+      BindingResult bindingResult,
+      OAuth2AuthenticationToken token
+  ) {
+    if (bindingResult.hasErrors()) {
       return "gruppeHinzufuegen";
     }
-    gruppenService.addGruppe(token.getPrincipal().getAttribute("login"), HtmlUtils.htmlEscape(form.name()));
+    gruppenService.addGruppe(token.getPrincipal().getAttribute("login"),
+        HtmlUtils.htmlEscape(form.name()));
 
     return "redirect:/";
-}
-
-
-
-
-
-
-
-
-
-
+  }
 }
