@@ -15,12 +15,15 @@
     </h1>
   </header>
   <main class="row">
-    <form th:action="gruppe/nutzerHinzufuegen" method="post">
-      <input type="hidden" th:value="*{id}" name="id">
+    <form th:action="@{/gruppe/neueTransaktion}" method="post"
+          th:object="${transaktionHinzufuegenForm}">
+      <input type="hidden" th:value="${gruppeId}" name="id">
       <div>
-        <label for="inputGlaeubiger" class="form-label">Von:</label>
-        <select class="form-select" id="inputGlaeubiger" aria-label="Gläubiger">
-          <option value="githubHandle1">
+        <label th:for="${#ids.next('glaeubiger')}" class="form-label">Von:</label>
+        <select th:field="*{glaeubiger}" class="form-select" aria-label="Gläubiger"
+                th:remove="all-but-first">
+          <option th:each="mitglied:${mitglieder}" th:value="${mitglied.getGitHubName()}"
+                  th:text="${mitglied.getGitHubName()}">
             Nutzer 1
           </option>
           <option value="githubHandle2">
@@ -28,26 +31,28 @@
           </option>
         </select>
       </div>
-      <div class="mt-3">
+      <div th:class="'mt-3' + ${#fields.hasErrors('betrag')? 'is-invalid':''}">
         <label for="inputBetrag" class="form-label">Betrag:</label>
-        <input type="number" step="0.01" class="form-control" id="inputBetrag" name="betrag" placeholder="€">
+        <input th:value="*{betrag}" type="number" step="0.01"
+               th:class="'form-control ' + ${#fields.hasErrors('betrag')? 'is-invalid' : ''}"
+               id="inputBetrag" name="betrag"
+               placeholder="€">
       </div>
-      <div class="mt-3">
+      <div th:class="'mt-3' + ${#fields.hasErrors('aktivitaet')? 'is-invalid':''}">
         <label for="inputAktivitaet" class="form-label">Aktivität:</label>
-        <input type="text" class="form-control" id="inputAktivitaet" name="aktivitaet">
+        <input th:value="*{aktivitaet}" type="text"
+               th:class="'form-control ' + ${#fields.hasErrors('aktivitaet')? 'is-invalid' : ''}"
+               id="inputAktivitaet" name="aktivitaet">
       </div>
       <div class="mt-3">
         <div>An:</div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="githubHandle1" id="checkbox1" name="schuldner">
-          <label class="form-check-label" for="checkbox1">
+        <div th:class="${#fields.hasErrors('schuldner')}? 'is-invalid'"
+             th:each="mitglied:${mitglieder}">
+          <input type="checkbox" th:value="${mitglied.getGitHubName()}" th:field="*{schuldner}"
+                 th:class="'form-check-input ' + ${#fields.hasErrors('schuldner')? 'is-invalid' : ''}">
+          <label class="form-check-label" th:for="${#ids.prev('schuldner')}"
+                 th:text="${mitglied.getGitHubName()}">
             Nutzer 1
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="githubHandle2" id="checkbox2" name="schuldner">
-          <label class="form-check-label" for="checkbox2">
-            Nutzer 2
           </label>
         </div>
       </div>

@@ -7,21 +7,25 @@ import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.domain.model.Ueberweisung;
 import de.hhu.propra.splitter.domain.service.AusgleichService;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
+import de.hhu.propra.splitter.exception.PersonNotFound;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
 import de.hhu.propra.splitter.web.forms.PersonHinzufuegenForm;
+import de.hhu.propra.splitter.web.forms.TransaktionHinzufuegenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +37,7 @@ public class WebController {
 
 
   final GruppenService gruppenService;
+
 
   @SuppressFBWarnings("EI_EXPOSE_REP2")
   @Autowired
@@ -81,6 +86,7 @@ public class WebController {
     return "redirect:/";
   }
 
+  //TODO: Change MoneyFormat
   @GetMapping("/gruppe")
   public String gruppeDetails(
       Model m,
@@ -144,6 +150,7 @@ public class WebController {
     return "redirect:/gruppe?nr=" + form.id();
   }
 
+  //TODO: Wenn Transaktion, dann Error
   @GetMapping("/gruppe/nutzerHinzufuegen")
   public String nutzerHinzufuegenForm(
       Model m,
@@ -182,5 +189,61 @@ public class WebController {
     return "redirect:/gruppe?nr=" + form.id();
   }
 
+  @GetMapping("/gruppe/neueTransaktion")
+  public String transaktionHinzufuegenForm(
+      Model m,
+      @ModelAttribute TransaktionHinzufuegenForm transaktionHinzufuegenForm,
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId
+  ) {
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), gruppeId);
+    if (gruppe.isIstOffen()) {
+      m.addAttribute("gruppeId", gruppeId);
+      m.addAttribute("mitglieder", gruppe.getMitglieder());
+      return "transaktionHinzufuegen";
+    }
+    return "redirect:/gruppe?nr=" + gruppeId;
+  }
+
+  @PostMapping("/gruppe/neueTransaktion")
+  public String transaktionHinzufuegen(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @Valid
+      TransaktionHinzufuegenForm transaktionHinzufuegenForm,
+      BindingResult bindingResult,
+      HttpServletResponse response
+  ) {
+    System.out.println(transaktionHinzufuegenForm);  //TODO: delete
+    if (bindingResult.hasErrors()) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      if (transaktionHinzufuegenForm.id() == null) {
+        throw new GruppeNotFound();
+      }
+      Gruppe gruppe = gruppenService.getGruppeForGithubName(
+          token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
+      m.addAttribute("gruppeId", transaktionHinzufuegenForm.id());
+      m.addAttribute("mitglieder", gruppe.getMitglieder());
+      return "transaktionHinzufuegen";
+    }
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
+    if (!gruppe.isIstOffen()) {
+      throw new GruppeNotFound();
+    }
+
+    try {
+      gruppenService.addTransaktion(transaktionHinzufuegenForm.id(),
+          transaktionHinzufuegenForm.aktivitaet(),
+          Money.parse("EUR " + transaktionHinzufuegenForm.betrag()),
+          transaktionHinzufuegenForm.glaeubiger(),
+          transaktionHinzufuegenForm.schuldner());
+    } catch (PersonNotFound e) {
+      bindingResult.addError(new ObjectError("FormError", "Person nicht gefunden"));
+      return "transaktionHinzufuegen";
+    }
+    return "redirect:/gruppe?nr=" + transaktionHinzufuegenForm.id();
+  }
 
 }

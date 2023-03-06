@@ -6,6 +6,7 @@ import de.hhu.propra.splitter.exception.GruppeNotFound;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -62,6 +63,13 @@ public class GruppenService {
     return this.getGruppen().stream().filter(
         gruppe -> gruppe.getId().equals(gruppenId)
     ).findFirst().orElseThrow(GruppeNotFound::new);
+  }
+
+  public void addTransaktion(Long gruppenId, String beschreibung, Money betrag, String glaubiger,
+      Set<String> schuldner) {
+    Gruppe gruppe = getGruppeforGruppenId(gruppenId);
+    gruppe.addAusgabe(beschreibung, betrag, glaubiger, schuldner);
+
   }
 }
 

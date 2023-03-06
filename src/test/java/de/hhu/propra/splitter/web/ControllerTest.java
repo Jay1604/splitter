@@ -13,6 +13,8 @@ import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
+import java.util.Set;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,7 +206,7 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/schliessen")
+  @DisplayName("Testen des Post Request in /gruppe/nutzerHinzufuegen")
   @WithMockOAuth2User(login = "nutzer1")
   void test_16() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
@@ -250,4 +252,150 @@ public class ControllerTest {
         ).andExpect(status().is4xxClientError())
         .andReturn();
   }
+
+  //region TransaktionsTests
+  @Test
+  @WithMockOAuth2User(login = "nutzer1")
+  @DisplayName("Route /gruppe/neueTransaktion?nr= gibt 200 zurück")
+  void test_19() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(get("/gruppe/neueTransaktion?nr=0"))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("Die private Seite /gruppe/neueTransaktion ist für "
+      + "nicht-authentifizierte User nicht erreichbar")
+  void test_20() throws Exception {
+    MvcResult mvcResult = mvc.perform(get("/gruppe/neueTransaktion?nr=0"))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
+    assertThat(mvcResult.getResponse().getRedirectedUrl())
+        .contains("oauth2/authorization/github");
+
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_21() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+        post("/gruppe/neueTransaktion")
+            .param("id", "0")
+            .param("betrag", "10.02")
+            .param("aktivitaet", "test")
+            .param("glaeubiger", "nutzer1")
+            .param("schuldner", "nutzer1")
+            .param("schuldner", "nutzer2")
+            .with(csrf())
+    ).andExpect(status().is3xxRedirection()).andReturn();
+
+    verify(gruppenService).addTransaktion(0L, "test", Money.of(10.02, "EUR"), "nutzer1",
+        Set.of("nutzer1", "nutzer2"));
+  }
+
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne id")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_22() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/neueTransaktion")
+                .param("id", "")
+                .param("betrag", "10.02")
+                .param("aktivitaet", "test")
+                .param("glaeubiger", "nutzer1")
+                .param("schuldner", "nutzer1")
+                .param("schuldner", "nutzer2")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne betrag")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_23() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/neueTransaktion")
+                .param("id", "0")
+                .param("betrag", "")
+                .param("aktivitaet", "test")
+                .param("glaeubiger", "nutzer1")
+                .param("schuldner", "nutzer1")
+                .param("schuldner", "nutzer2")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne aktivitaet")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_24() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/neueTransaktion")
+                .param("id", "0")
+                .param("betrag", "10.02")
+                .param("aktivitaet", "")
+                .param("glaeubiger", "nutzer1")
+                .param("schuldner", "nutzer1")
+                .param("schuldner", "nutzer2")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne glaeubiger")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_25() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/neueTransaktion")
+                .param("id", "0")
+                .param("betrag", "10.02")
+                .param("aktivitaet", "test")
+                .param("glaeubiger", "")
+                .param("schuldner", "nutzer1")
+                .param("schuldner", "nutzer2")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne schuldner")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_26() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.addMitglied("nutzer2");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/neueTransaktion")
+                .param("id", "0")
+                .param("betrag", "")
+                .param("aktivitaet", "test")
+                .param("glaeubiger", "nutzer1")
+                .param("schuldner", "")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+  //endregion
 }
