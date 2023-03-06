@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -13,7 +15,9 @@ import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
+import de.hhu.propra.splitter.web.objects.WebTransaktion;
 import java.util.Set;
+import org.hamcrest.CoreMatchers;
 import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -397,5 +401,42 @@ public class ControllerTest {
         ).andExpect(status().is4xxClientError())
         .andReturn();
   }
+
+  @Test
+  @WithMockOAuth2User(login = "nutzer1")
+  @DisplayName("Route /nutzer/uebersicht gibt 200 zurück")
+  void test_27() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(get("/nutzer/uebersicht"))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("Die private Seite /nutzer/uebersicht ist für "
+      + "nicht-authentifizierte User nicht erreichbar")
+  void test_28() throws Exception {
+    MvcResult mvcResult = mvc.perform(get("/nutzer/uebersicht"))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
+    assertThat(mvcResult.getResponse().getRedirectedUrl())
+        .contains("oauth2/authorization/github");
+
+  }
+
+  @Test
+  @DisplayName("Die  Seite /nutzer/uebersicht stellt alle Transaktion dar")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_29() throws Exception {
+    Gruppe mockGruppe = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockGruppe.addMitglied("nutzer2");
+    mockGruppe.addAusgabe("test", Money.of(10, "EUR"), "nutzer1", Set.of("nutzer1", "nutzer2"));
+    Set<Gruppe> gruppen = Set.of(mockGruppe);
+    when(gruppenService.getGruppenForGithubName("nutzer1")).thenReturn(gruppen);
+    mvc.perform(get("/nutzer/uebersicht"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(CoreMatchers.containsString("5")));
+  }
+
   //endregion
 }

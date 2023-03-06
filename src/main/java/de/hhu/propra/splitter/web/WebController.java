@@ -2,6 +2,7 @@ package de.hhu.propra.splitter.web;
 
 import static java.util.function.Predicate.not;
 
+import de.hhu.propra.splitter.domain.model.Ausgabe;
 import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.domain.model.Ueberweisung;
@@ -14,9 +15,12 @@ import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
 import de.hhu.propra.splitter.web.forms.PersonHinzufuegenForm;
 import de.hhu.propra.splitter.web.forms.TransaktionHinzufuegenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
+import de.hhu.propra.splitter.web.objects.WebTransaktion;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.javamoney.moneta.Money;
@@ -245,5 +249,21 @@ public class WebController {
     }
     return "redirect:/gruppe?nr=" + transaktionHinzufuegenForm.id();
   }
+
+  @GetMapping("/nutzer/uebersicht")
+  public String nutzerUebersicht(
+      Model model,
+      OAuth2AuthenticationToken token
+  ) {
+    AusgleichService ausgleichService = new AusgleichService();
+    Set<WebTransaktion> ueberweisungen = gruppenService.getGruppenForGithubName(
+        token.getPrincipal().getAttribute("login")).stream().flatMap(
+          a -> ausgleichService.ausgleichen(a).stream().map(
+            b -> new WebTransaktion(b.getSender().getGitHubName(), b.getBetrag().toString(),
+                b.getEmpfaenger().getGitHubName(), a.getName()))).collect(Collectors.toSet());
+    model.addAttribute("Ueberweisungen", ueberweisungen);
+    return "nutzerUebersicht";
+  }
+
 
 }
