@@ -10,6 +10,7 @@ import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
+import de.hhu.propra.splitter.web.forms.PersonHinzufuegenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.HtmlUtils;
@@ -141,5 +143,44 @@ public class WebController {
     gruppenService.gruppeschliessen(form.id());
     return "redirect:/gruppe?nr=" + form.id();
   }
+
+  @GetMapping("/gruppe/nutzerHinzufuegen")
+  public String nutzerHinzufuegenForm(
+      Model m,
+      @ModelAttribute PersonHinzufuegenForm personHinzufuegenForm,
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId
+  ) {
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), gruppeId);
+    if (gruppe.isIstOffen()) {
+      m.addAttribute("gruppeID", gruppeId);
+      return "PersonHinzufuegen";
+    }
+    return "redirect:/gruppe?nr=" + gruppeId;
+  }
+
+  @PostMapping("/gruppe/nutzerHinzufuegen")
+  public String nutzerHinzufuegen(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @Valid
+      PersonHinzufuegenForm form,
+      BindingResult bindingResult,
+      HttpServletResponse response
+  ) {
+    if (bindingResult.hasErrors()) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return "PersonHinzufuegen";
+    }
+    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+        token.getPrincipal().getAttribute("login"), form.id());
+    if (!gruppe.isIstOffen()) {
+      throw new GruppeNotFound();
+    }
+    gruppenService.addUser(HtmlUtils.htmlEscape(form.name()), form.id());
+    return "redirect:/gruppe?nr=" + form.id();
+  }
+
 
 }

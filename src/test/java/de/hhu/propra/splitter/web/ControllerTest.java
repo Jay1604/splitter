@@ -13,7 +13,6 @@ import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +178,76 @@ public class ControllerTest {
                 .with(csrf())
         ).andExpect(view().name("gruppeSchliessen"))
         .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @WithMockOAuth2User(login = "nutzer1")
+  @DisplayName("Route /gruppe/nutzerHinzufuegen?nr= gibt 200 zurück")
+  void test_14() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(get("/gruppe/nutzerHinzufuegen?nr=0"))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("Die private Seite /gruppe/nutzerHinzufuegen ist für "
+      + "nicht-authentifizierte User nicht erreichbar")
+  void test_15() throws Exception {
+    MvcResult mvcResult = mvc.perform(get("/gruppe/nutzerHinzufuegen?nr=0"))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
+    assertThat(mvcResult.getResponse().getRedirectedUrl())
+        .contains("oauth2/authorization/github");
+
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/schliessen")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_16() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+        post("/gruppe/nutzerHinzufuegen")
+            .param("id", "0")
+            .param("name", "nutzer2")
+            .with(csrf())
+    ).andExpect(status().is3xxRedirection()).andReturn();
+
+    verify(gruppenService).addUser("nutzer2", 0L);
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request /gruppe/nutzerHinzufuegen mit leerem Inhalt")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_17() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/nutzerHinzufuegen")
+                .param("id", "")
+                .param("name", "")
+                .with(csrf())
+        ).andExpect(view().name("PersonHinzufuegen"))
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request /gruppe/nutzerHinzufuegen wenn Gruppe geschlossen")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_18() throws Exception {
+    Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
+    mockedResult.setIstOffen(false);
+    when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
+    mvc.perform(
+            post("/gruppe/nutzerHinzufuegen")
+                .param("id", "0")
+                .param("name", "Nutzer2")
+                .with(csrf())
+        ).andExpect(status().is4xxClientError())
         .andReturn();
   }
 }
