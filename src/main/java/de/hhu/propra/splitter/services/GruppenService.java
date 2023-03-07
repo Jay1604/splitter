@@ -34,7 +34,7 @@ public class GruppenService {
     ).collect(Collectors.toSet());
   }
 
-  public void addUser(String githubName, long gruppenId) {
+  public void addPersonToGruppe(String githubName, long gruppenId) {
 
     Gruppe gruppe = gruppen
         .stream()
@@ -45,7 +45,7 @@ public class GruppenService {
     gruppe.addMitglied(githubName);
   }
 
-  public Gruppe getGruppeForGithubName(String githubName, long id) {
+  public Gruppe getGruppeForGithubNameById(String githubName, long id) {
     return this.getGruppen().stream().filter(
         gruppe -> gruppe.getMitglieder()
             .stream()
@@ -55,19 +55,19 @@ public class GruppenService {
     ).findFirst().orElseThrow(GruppeNotFound::new);
   }
 
-  public void gruppeschliessen(long gruppenId) {
-    getGruppeforGruppenId(gruppenId).setOffen(false);
+  public void schliesseGruppe(long gruppenId) {
+    getGruppeById(gruppenId).setOffen(false);
   }
 
-  private Gruppe getGruppeforGruppenId(long gruppenId) {
+  private Gruppe getGruppeById(long gruppenId) {
     return this.getGruppen().stream().filter(
         gruppe -> gruppe.getId().equals(gruppenId)
     ).findFirst().orElseThrow(GruppeNotFound::new);
   }
 
-  public void addTransaktion(Long gruppenId, String beschreibung, Money betrag, String glaubiger,
+  public void addAusgabe(Long gruppenId, String beschreibung, Money betrag, String glaubiger,
       Set<String> schuldner) {
-    Gruppe gruppe = getGruppeforGruppenId(gruppenId);
+    Gruppe gruppe = getGruppeById(gruppenId);
     gruppe.addAusgabe(beschreibung, betrag, glaubiger, schuldner);
 
   }

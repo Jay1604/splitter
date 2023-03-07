@@ -82,7 +82,7 @@ public class WebController {
   @GetMapping("/gruppe")
   public String gruppeDetails(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
     Set<WebAusgabe> history = gruppe.getAusgaben().stream().map(
             e -> new WebAusgabe(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
@@ -100,7 +100,7 @@ public class WebController {
   @GetMapping("gruppe/schliessen")
   public String gruppeschliessenForm(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
     if (gruppe.isOffen()) {
       m.addAttribute("id", gruppeId);
@@ -117,12 +117,12 @@ public class WebController {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "gruppeSchliessen";
     }
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
     if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
-    gruppenService.gruppeschliessen(form.id());
+    gruppenService.schliesseGruppe(form.id());
     return "redirect:/gruppe?nr=" + form.id();
   }
 
@@ -131,7 +131,7 @@ public class WebController {
   public String nutzerHinzufuegenForm(Model m,
       @ModelAttribute PersonHinzufuegenForm personHinzufuegenForm, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
     if (gruppe.isOffen()) {
       m.addAttribute("gruppeID", gruppeId);
@@ -148,12 +148,12 @@ public class WebController {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "PersonHinzufuegen";
     }
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
     if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
-    gruppenService.addUser(HtmlUtils.htmlEscape(form.name()), form.id());
+    gruppenService.addPersonToGruppe(HtmlUtils.htmlEscape(form.name()), form.id());
     return "redirect:/gruppe?nr=" + form.id();
   }
 
@@ -161,7 +161,7 @@ public class WebController {
   public String transaktionHinzufuegenForm(Model m,
       @ModelAttribute TransaktionHinzufuegenForm transaktionHinzufuegenForm,
       OAuth2AuthenticationToken token, @RequestParam(value = "nr") long gruppeId) {
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
     if (gruppe.isOffen()) {
       m.addAttribute("gruppeId", gruppeId);
@@ -181,20 +181,20 @@ public class WebController {
       if (transaktionHinzufuegenForm.id() == null) {
         throw new GruppeNotFound();
       }
-      Gruppe gruppe = gruppenService.getGruppeForGithubName(
+      Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
           token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
       m.addAttribute("gruppeId", transaktionHinzufuegenForm.id());
       m.addAttribute("mitglieder", gruppe.getMitglieder());
       return "transaktionHinzufuegen";
     }
-    Gruppe gruppe = gruppenService.getGruppeForGithubName(
+    Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
     if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
 
     try {
-      gruppenService.addTransaktion(transaktionHinzufuegenForm.id(),
+      gruppenService.addAusgabe(transaktionHinzufuegenForm.id(),
           transaktionHinzufuegenForm.aktivitaet(),
           Money.parse("EUR " + transaktionHinzufuegenForm.betrag()),
           transaktionHinzufuegenForm.glaeubiger(), transaktionHinzufuegenForm.schuldner());

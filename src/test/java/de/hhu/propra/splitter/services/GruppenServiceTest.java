@@ -46,7 +46,7 @@ public class GruppenServiceTest {
 
     Long gruppe1Id = gruppenService.addGruppe(personA, "gruppe1");
     gruppenService.addGruppe(personB, "gruppe2");
-    gruppenService.addUser(personB, gruppe1Id);
+    gruppenService.addPersonToGruppe(personB, gruppe1Id);
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
 
