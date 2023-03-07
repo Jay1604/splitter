@@ -56,7 +56,7 @@ public class GruppenService {
   }
 
   public void gruppeschliessen(long gruppenId) {
-    getGruppeforGruppenId(gruppenId).setIstOffen(false);
+    getGruppeforGruppenId(gruppenId).setOffen(false);
   }
 
   private Gruppe getGruppeforGruppenId(long gruppenId) {

@@ -14,7 +14,7 @@
   </header>
   <main class="row">
     <div class="col text-end">
-      <div class="btn-group" th:if="${gruppe.isIstOffen()}">
+      <div class="btn-group" th:if="${gruppe.isOffen()}">
         <a th:href="@{gruppe/schliessen(nr=${gruppe.id})}" class="btn btn-outline-primary">Gruppe
           schließen</a>
         <a th:href="@{gruppe/nutzerHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Nutzer

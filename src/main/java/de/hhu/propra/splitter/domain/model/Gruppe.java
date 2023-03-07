@@ -13,14 +13,14 @@ public class Gruppe {
   private Long id;
   private Set<Person> mitglieder;
   private String name;
-  private boolean istOffen;
+  private boolean offen;
   private Set<Ausgabe> ausgaben;
 
   public Gruppe(Long id, String gruender, String name) {
     this.id = id;
     this.mitglieder = new HashSet<>(Set.of(new Person(gruender)));
     this.name = name;
-    this.istOffen = true;
+    this.offen = true;
     this.ausgaben = new HashSet<>();
   }
 
@@ -32,8 +32,8 @@ public class Gruppe {
     return name;
   }
 
-  public boolean isIstOffen() {
-    return istOffen;
+  public boolean isOffen() {
+    return offen;
   }
 
   public Set<Ausgabe> getAusgaben() {
@@ -44,21 +44,30 @@ public class Gruppe {
     this.mitglieder.add(new Person(name));
   }
 
-  public void addAusgabe(String beschreibung, Money betrag, String glaeubiger,
-      Set<String> schuldner) {
+  public void addAusgabe(
+      String beschreibung,
+      Money betrag,
+      String glaeubiger,
+      Set<String> schuldner
+  ) {
     Person glaeubigerPerson = getPersonfromGithubName(glaeubiger);
-    Set<Person> schuldnerPersonen = schuldner.stream().map(this::getPersonfromGithubName).collect(
-        Collectors.toSet());
+    Set<Person> schuldnerPersonen = schuldner
+        .stream()
+        .map(this::getPersonfromGithubName)
+        .collect(Collectors.toSet());
     this.ausgaben.add(new Ausgabe(beschreibung, betrag, glaeubigerPerson, schuldnerPersonen));
   }
 
   private Person getPersonfromGithubName(String user) {
-    return mitglieder.stream().filter(a -> a.getGitHubName().equals(user)).findFirst().orElseThrow(
-        PersonNotFound::new);
+    return mitglieder
+        .stream()
+        .filter(a -> a.getGitHubName().equals(user))
+        .findFirst()
+        .orElseThrow(PersonNotFound::new);
   }
 
-  public void setIstOffen(boolean istOffen) {
-    this.istOffen = istOffen;
+  public void setOffen(boolean offen) {
+    this.offen = offen;
   }
 
   public Long getId() {

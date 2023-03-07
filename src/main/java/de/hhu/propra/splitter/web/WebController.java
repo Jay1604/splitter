@@ -2,7 +2,6 @@ package de.hhu.propra.splitter.web;
 
 import static java.util.function.Predicate.not;
 
-import de.hhu.propra.splitter.domain.model.Ausgabe;
 import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.domain.model.Person;
 import de.hhu.propra.splitter.domain.model.Ueberweisung;
@@ -17,10 +16,8 @@ import de.hhu.propra.splitter.web.forms.TransaktionHinzufuegenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
 import de.hhu.propra.splitter.web.objects.WebTransaktion;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.javamoney.moneta.Money;
@@ -54,12 +51,9 @@ public class WebController {
     Set<Gruppe> gruppen = gruppenService.getGruppenForGithubName(
         auth.getPrincipal().getAttribute("login"));
 
-    var geschlosseneGruppen = gruppen.stream()
-        .filter(not(Gruppe::isIstOffen))
+    var geschlosseneGruppen = gruppen.stream().filter(not(Gruppe::isOffen))
         .collect(Collectors.toSet());
-    var offeneGruppen = gruppen.stream()
-        .filter(Gruppe::isIstOffen)
-        .collect(Collectors.toSet());
+    var offeneGruppen = gruppen.stream().filter(Gruppe::isOffen).collect(Collectors.toSet());
 
     m.addAttribute("offeneGruppen", offeneGruppen);
     m.addAttribute("geschlosseneGruppen", geschlosseneGruppen);
@@ -67,19 +61,13 @@ public class WebController {
   }
 
   @GetMapping("/gruppe/erstellen")
-  public String gruppeErstellenForm(
-      GruppeErstellenForm gruppeErstellenForm
-  ) {
+  public String gruppeErstellenForm(GruppeErstellenForm gruppeErstellenForm) {
     return "gruppeHinzufuegen";
   }
 
   @PostMapping("/gruppe/erstellen")
-  public String gruppeHinzufuegen(
-      @Valid GruppeErstellenForm gruppeErstellenForm,
-      BindingResult bindingResult,
-      OAuth2AuthenticationToken token,
-      HttpServletResponse response
-  ) {
+  public String gruppeHinzufuegen(@Valid GruppeErstellenForm gruppeErstellenForm,
+      BindingResult bindingResult, OAuth2AuthenticationToken token, HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "gruppeHinzufuegen";
@@ -92,24 +80,15 @@ public class WebController {
 
   //TODO: Change MoneyFormat
   @GetMapping("/gruppe")
-  public String gruppeDetails(
-      Model m,
-      OAuth2AuthenticationToken token,
-      @RequestParam(value = "nr") long gruppeId
-  ) {
+  public String gruppeDetails(Model m, OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), gruppeId);
     Set<WebAusgabe> history = gruppe.getAusgaben().stream().map(
-        e -> new WebAusgabe(
-            e.getBeschreibung(),
-            e.getBetrag().getNumber().toString(),
-            e.getGlaeubiger().getGitHubName(),
-            String.join(
-                ", ",
-                e.getSchuldner().stream().map(Person::getGitHubName).toList()
-            )
-        )
-    ).collect(Collectors.toSet());
+            e -> new WebAusgabe(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
+                e.getGlaeubiger().getGitHubName(),
+                String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList())))
+        .collect(Collectors.toSet());
     m.addAttribute("gruppe", gruppe);
     m.addAttribute("history", history);
     AusgleichService ausgleichService = new AusgleichService();
@@ -119,13 +98,11 @@ public class WebController {
   }
 
   @GetMapping("gruppe/schliessen")
-  public String gruppeschliessenForm(
-      Model m,
-      OAuth2AuthenticationToken token,
+  public String gruppeschliessenForm(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    if (gruppe.isIstOffen()) {
+    if (gruppe.isOffen()) {
       m.addAttribute("id", gruppeId);
       return "gruppeSchliessen";
     }
@@ -133,21 +110,16 @@ public class WebController {
   }
 
   @PostMapping("gruppe/schliessen")
-  public String gruppeschliessen(
-      Model m,
-      OAuth2AuthenticationToken token,
-      @Valid
-      GruppenSchliessenForm form,
-      BindingResult bindingResult,
-      HttpServletResponse response
-  ) {
+  public String gruppeschliessen(Model m, OAuth2AuthenticationToken token,
+      @Valid GruppenSchliessenForm form, BindingResult bindingResult,
+      HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "gruppeSchliessen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), form.id());
-    if (!gruppe.isIstOffen()) {
+    if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
     gruppenService.gruppeschliessen(form.id());
@@ -156,15 +128,12 @@ public class WebController {
 
   //TODO: Wenn Transaktion, dann Error
   @GetMapping("/gruppe/nutzerHinzufuegen")
-  public String nutzerHinzufuegenForm(
-      Model m,
-      @ModelAttribute PersonHinzufuegenForm personHinzufuegenForm,
-      OAuth2AuthenticationToken token,
-      @RequestParam(value = "nr") long gruppeId
-  ) {
+  public String nutzerHinzufuegenForm(Model m,
+      @ModelAttribute PersonHinzufuegenForm personHinzufuegenForm, OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    if (gruppe.isIstOffen()) {
+    if (gruppe.isOffen()) {
       m.addAttribute("gruppeID", gruppeId);
       return "PersonHinzufuegen";
     }
@@ -172,21 +141,16 @@ public class WebController {
   }
 
   @PostMapping("/gruppe/nutzerHinzufuegen")
-  public String nutzerHinzufuegen(
-      Model m,
-      OAuth2AuthenticationToken token,
-      @Valid
-      PersonHinzufuegenForm form,
-      BindingResult bindingResult,
-      HttpServletResponse response
-  ) {
+  public String nutzerHinzufuegen(Model m, OAuth2AuthenticationToken token,
+      @Valid PersonHinzufuegenForm form, BindingResult bindingResult,
+      HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "PersonHinzufuegen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), form.id());
-    if (!gruppe.isIstOffen()) {
+    if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
     gruppenService.addUser(HtmlUtils.htmlEscape(form.name()), form.id());
@@ -194,15 +158,12 @@ public class WebController {
   }
 
   @GetMapping("/gruppe/neueTransaktion")
-  public String transaktionHinzufuegenForm(
-      Model m,
+  public String transaktionHinzufuegenForm(Model m,
       @ModelAttribute TransaktionHinzufuegenForm transaktionHinzufuegenForm,
-      OAuth2AuthenticationToken token,
-      @RequestParam(value = "nr") long gruppeId
-  ) {
+      OAuth2AuthenticationToken token, @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    if (gruppe.isIstOffen()) {
+    if (gruppe.isOffen()) {
       m.addAttribute("gruppeId", gruppeId);
       m.addAttribute("mitglieder", gruppe.getMitglieder());
       return "transaktionHinzufuegen";
@@ -211,14 +172,9 @@ public class WebController {
   }
 
   @PostMapping("/gruppe/neueTransaktion")
-  public String transaktionHinzufuegen(
-      Model m,
-      OAuth2AuthenticationToken token,
-      @Valid
-      TransaktionHinzufuegenForm transaktionHinzufuegenForm,
-      BindingResult bindingResult,
-      HttpServletResponse response
-  ) {
+  public String transaktionHinzufuegen(Model m, OAuth2AuthenticationToken token,
+      @Valid TransaktionHinzufuegenForm transaktionHinzufuegenForm, BindingResult bindingResult,
+      HttpServletResponse response) {
     System.out.println(transaktionHinzufuegenForm);  //TODO: delete
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -233,7 +189,7 @@ public class WebController {
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubName(
         token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
-    if (!gruppe.isIstOffen()) {
+    if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
 
@@ -241,8 +197,7 @@ public class WebController {
       gruppenService.addTransaktion(transaktionHinzufuegenForm.id(),
           transaktionHinzufuegenForm.aktivitaet(),
           Money.parse("EUR " + transaktionHinzufuegenForm.betrag()),
-          transaktionHinzufuegenForm.glaeubiger(),
-          transaktionHinzufuegenForm.schuldner());
+          transaktionHinzufuegenForm.glaeubiger(), transaktionHinzufuegenForm.schuldner());
     } catch (PersonNotFound e) {
       bindingResult.addError(new ObjectError("FormError", "Person nicht gefunden"));
       return "transaktionHinzufuegen";
@@ -251,16 +206,17 @@ public class WebController {
   }
 
   @GetMapping("/nutzer/uebersicht")
-  public String nutzerUebersicht(
-      Model model,
-      OAuth2AuthenticationToken token
-  ) {
+  public String nutzerUebersicht(Model model, OAuth2AuthenticationToken token) {
     AusgleichService ausgleichService = new AusgleichService();
-    Set<WebTransaktion> ueberweisungen = gruppenService.getGruppenForGithubName(
-        token.getPrincipal().getAttribute("login")).stream().flatMap(
-          a -> ausgleichService.ausgleichen(a).stream().map(
-            b -> new WebTransaktion(b.getSender().getGitHubName(), b.getBetrag().toString(),
-                b.getEmpfaenger().getGitHubName(), a.getName()))).collect(Collectors.toSet());
+    Set<WebTransaktion> ueberweisungen = gruppenService
+        .getGruppenForGithubName(token
+            .getPrincipal()
+            .getAttribute("login")
+        ).stream()
+        .flatMap(
+            a -> ausgleichService.ausgleichen(a).stream().map(
+                b -> new WebTransaktion(b.getSender().getGitHubName(), b.getBetrag().toString(),
+                    b.getEmpfaenger().getGitHubName(), a.getName()))).collect(Collectors.toSet());
     model.addAttribute("Ueberweisungen", ueberweisungen);
     return "nutzerUebersicht";
   }

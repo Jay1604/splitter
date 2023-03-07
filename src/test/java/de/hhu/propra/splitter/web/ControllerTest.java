@@ -7,7 +7,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -15,7 +14,6 @@ import de.hhu.propra.splitter.domain.model.Gruppe;
 import de.hhu.propra.splitter.exception.GruppeNotFound;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
-import de.hhu.propra.splitter.web.objects.WebTransaktion;
 import java.util.Set;
 import org.hamcrest.CoreMatchers;
 import org.javamoney.moneta.Money;
@@ -246,7 +244,7 @@ public class ControllerTest {
   @WithMockOAuth2User(login = "nutzer1")
   void test_18() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
-    mockedResult.setIstOffen(false);
+    mockedResult.setOffen(false);
     when(gruppenService.getGruppeForGithubName("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/nutzerHinzufuegen")
