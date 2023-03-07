@@ -15,11 +15,14 @@
     </h1>
   </header>
   <main class="row">
-    <form th:action="@{/gruppe/nutzerHinzufuegen}" method="post" th:object="${personHinzufuegenForm}">
+    <form th:action="@{/gruppe/nutzerHinzufuegen}" method="post"
+          th:object="${personGruppeHinzufuegenForm}">
       <input type="hidden" th:value="${gruppeID}" name="id">
       <div th:class="${#fields.hasErrors('name')}? 'is-invalid'">
         <label for="inputName" class="form-label">Nutzername:</label>
-        <input type="text" th:class="'form-control ' + ${#fields.hasErrors('name')? 'is-invalid' : ''}" id="inputName" name="name">
+        <input type="text"
+               th:class="'form-control ' + ${#fields.hasErrors('name')? 'is-invalid' : ''}"
+               id="inputName" name="name">
         <div
             class="invalid-feedback"
             th:if="${#fields.hasErrors('name')}"

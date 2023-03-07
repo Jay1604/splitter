@@ -8,10 +8,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
-public record TransaktionHinzufuegenForm(
-    @NotNull Long id,
+public record AusgabeHinzufuegenForm(
+    @NotNull Long gruppeId,
     @NotBlank @Pattern(regexp = "^\\d+.?\\d?\\d?$") String betrag,
-    @NotBlank String aktivitaet,
+    @NotBlank String beschreibung,
     @NotBlank String glaeubiger,
     @NotEmpty Set<String> schuldner
-) {}
+) {
+
+}

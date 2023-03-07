@@ -101,7 +101,7 @@ public class ControllerTest {
 
   @Test
   @WithMockOAuth2User(login = "nutzer1")
-  @DisplayName("Route /gruppe?nr=<id> gibt 200 zurück")
+  @DisplayName("Route /gruppe?nr=<gruppeId> gibt 200 zurück")
   void test_7() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
@@ -110,7 +110,7 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Die private Seite /gruppe?nr=<id> ist für "
+  @DisplayName("Die private Seite /gruppe?nr=<gruppeId> ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_8() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
@@ -126,7 +126,7 @@ public class ControllerTest {
 
   @Test
   @WithMockOAuth2User(login = "nutzer1")
-  @DisplayName("Route /gruppe?nr=<id> gibt 404 zurück, wenn die Gruppe nicht existiert")
+  @DisplayName("Route /gruppe?nr=<gruppeId> gibt 404 zurück, wenn die Gruppe nicht existiert")
   void test_9() throws Exception {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenThrow(GruppeNotFound.class);
     mvc.perform(get("/gruppe?nr=0"))
@@ -287,9 +287,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
         post("/gruppe/neueTransaktion")
-            .param("id", "0")
+            .param("gruppeId", "0")
             .param("betrag", "10.02")
-            .param("aktivitaet", "test")
+            .param("beschreibung", "test")
             .param("glaeubiger", "nutzer1")
             .param("schuldner", "nutzer1")
             .param("schuldner", "nutzer2")
@@ -302,7 +302,7 @@ public class ControllerTest {
 
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne id")
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne gruppeId")
   @WithMockOAuth2User(login = "nutzer1")
   void test_22() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
@@ -310,9 +310,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/neueTransaktion")
-                .param("id", "")
+                .param("gruppeId", "")
                 .param("betrag", "10.02")
-                .param("aktivitaet", "test")
+                .param("beschreibung", "test")
                 .param("glaeubiger", "nutzer1")
                 .param("schuldner", "nutzer1")
                 .param("schuldner", "nutzer2")
@@ -330,9 +330,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/neueTransaktion")
-                .param("id", "0")
+                .param("gruppeId", "0")
                 .param("betrag", "")
-                .param("aktivitaet", "test")
+                .param("beschreibung", "test")
                 .param("glaeubiger", "nutzer1")
                 .param("schuldner", "nutzer1")
                 .param("schuldner", "nutzer2")
@@ -342,7 +342,7 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne aktivitaet")
+  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne beschreibung")
   @WithMockOAuth2User(login = "nutzer1")
   void test_24() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
@@ -350,9 +350,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/neueTransaktion")
-                .param("id", "0")
+                .param("gruppeId", "0")
                 .param("betrag", "10.02")
-                .param("aktivitaet", "")
+                .param("beschreibung", "")
                 .param("glaeubiger", "nutzer1")
                 .param("schuldner", "nutzer1")
                 .param("schuldner", "nutzer2")
@@ -370,9 +370,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/neueTransaktion")
-                .param("id", "0")
+                .param("gruppeId", "0")
                 .param("betrag", "10.02")
-                .param("aktivitaet", "test")
+                .param("beschreibung", "test")
                 .param("glaeubiger", "")
                 .param("schuldner", "nutzer1")
                 .param("schuldner", "nutzer2")
@@ -390,9 +390,9 @@ public class ControllerTest {
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
             post("/gruppe/neueTransaktion")
-                .param("id", "0")
+                .param("gruppeId", "0")
                 .param("betrag", "")
-                .param("aktivitaet", "test")
+                .param("beschreibung", "test")
                 .param("glaeubiger", "nutzer1")
                 .param("schuldner", "")
                 .with(csrf())

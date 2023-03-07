@@ -16,8 +16,8 @@
   </header>
   <main class="row">
     <form th:action="@{/gruppe/neueTransaktion}" method="post"
-          th:object="${transaktionHinzufuegenForm}">
-      <input type="hidden" th:value="${gruppeId}" name="id">
+          th:object="${ausgabeHinzufuegenForm}">
+      <input type="hidden" th:value="${gruppeId}" name="gruppeId">
       <div>
         <label th:for="${#ids.next('glaeubiger')}" class="form-label">Von:</label>
         <select th:field="*{glaeubiger}" class="form-select" aria-label="Gläubiger"
@@ -38,11 +38,11 @@
                id="inputBetrag" name="betrag"
                placeholder="€">
       </div>
-      <div th:class="'mt-3' + ${#fields.hasErrors('aktivitaet')? 'is-invalid':''}">
-        <label for="inputAktivitaet" class="form-label">Aktivität:</label>
-        <input th:value="*{aktivitaet}" type="text"
-               th:class="'form-control ' + ${#fields.hasErrors('aktivitaet')? 'is-invalid' : ''}"
-               id="inputAktivitaet" name="aktivitaet">
+      <div th:class="'mt-3' + ${#fields.hasErrors('beschreibung')? 'is-invalid':''}">
+        <label for="inputBeschreibung" class="form-label">Beschreibung:</label>
+        <input th:value="*{beschreibung}" type="text"
+               th:class="'form-control ' + ${#fields.hasErrors('beschreibung')? 'is-invalid' : ''}"
+               id="inputBeschreibung" name="beschreibung">
       </div>
       <div class="mt-3">
         <div>An:</div>

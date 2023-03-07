@@ -9,10 +9,10 @@ import de.hhu.propra.splitter.domain.services.AusgleichService;
 import de.hhu.propra.splitter.exceptions.GruppeNotFound;
 import de.hhu.propra.splitter.exceptions.PersonNotFound;
 import de.hhu.propra.splitter.services.GruppenService;
+import de.hhu.propra.splitter.web.forms.AusgabeHinzufuegenForm;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
-import de.hhu.propra.splitter.web.forms.PersonHinzufuegenForm;
-import de.hhu.propra.splitter.web.forms.TransaktionHinzufuegenForm;
+import de.hhu.propra.splitter.web.forms.PersonGruppeHinzufuegenForm;
 import de.hhu.propra.splitter.web.objects.WebAusgabe;
 import de.hhu.propra.splitter.web.objects.WebTransaktion;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -129,7 +129,8 @@ public class WebController {
   //TODO: Wenn Transaktion, dann Error
   @GetMapping("/gruppe/nutzerHinzufuegen")
   public String nutzerHinzufuegenForm(Model m,
-      @ModelAttribute PersonHinzufuegenForm personHinzufuegenForm, OAuth2AuthenticationToken token,
+      @ModelAttribute PersonGruppeHinzufuegenForm personGruppeHinzufuegenForm,
+      OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
@@ -142,7 +143,7 @@ public class WebController {
 
   @PostMapping("/gruppe/nutzerHinzufuegen")
   public String nutzerHinzufuegen(Model m, OAuth2AuthenticationToken token,
-      @Valid PersonHinzufuegenForm form, BindingResult bindingResult,
+      @Valid PersonGruppeHinzufuegenForm form, BindingResult bindingResult,
       HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -159,7 +160,7 @@ public class WebController {
 
   @GetMapping("/gruppe/neueTransaktion")
   public String transaktionHinzufuegenForm(Model m,
-      @ModelAttribute TransaktionHinzufuegenForm transaktionHinzufuegenForm,
+      @ModelAttribute AusgabeHinzufuegenForm ausgabeHinzufuegenForm,
       OAuth2AuthenticationToken token, @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
@@ -173,36 +174,35 @@ public class WebController {
 
   @PostMapping("/gruppe/neueTransaktion")
   public String transaktionHinzufuegen(Model m, OAuth2AuthenticationToken token,
-      @Valid TransaktionHinzufuegenForm transaktionHinzufuegenForm, BindingResult bindingResult,
+      @Valid AusgabeHinzufuegenForm ausgabeHinzufuegenForm, BindingResult bindingResult,
       HttpServletResponse response) {
-    System.out.println(transaktionHinzufuegenForm);  //TODO: delete
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      if (transaktionHinzufuegenForm.id() == null) {
+      if (ausgabeHinzufuegenForm.gruppeId() == null) {
         throw new GruppeNotFound();
       }
       Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-          token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
-      m.addAttribute("gruppeId", transaktionHinzufuegenForm.id());
+          token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
+      m.addAttribute("gruppeId", ausgabeHinzufuegenForm.gruppeId());
       m.addAttribute("mitglieder", gruppe.getMitglieder());
       return "transaktionHinzufuegen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), transaktionHinzufuegenForm.id());
+        token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
     if (!gruppe.isOffen()) {
       throw new GruppeNotFound();
     }
 
     try {
-      gruppenService.addAusgabe(transaktionHinzufuegenForm.id(),
-          transaktionHinzufuegenForm.aktivitaet(),
-          Money.parse("EUR " + transaktionHinzufuegenForm.betrag()),
-          transaktionHinzufuegenForm.glaeubiger(), transaktionHinzufuegenForm.schuldner());
+      gruppenService.addAusgabe(ausgabeHinzufuegenForm.gruppeId(),
+          ausgabeHinzufuegenForm.beschreibung(),
+          Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
+          ausgabeHinzufuegenForm.glaeubiger(), ausgabeHinzufuegenForm.schuldner());
     } catch (PersonNotFound e) {
       bindingResult.addError(new ObjectError("FormError", "Person nicht gefunden"));
       return "transaktionHinzufuegen";
     }
-    return "redirect:/gruppe?nr=" + transaktionHinzufuegenForm.id();
+    return "redirect:/gruppe?nr=" + ausgabeHinzufuegenForm.gruppeId();
   }
 
   @GetMapping("/nutzer/uebersicht")
