@@ -26,11 +26,11 @@
       </tr>
       </thead>
       <tbody th:remove="all-but-first">
-      <tr th:each="Ueberweisung: ${Ueberweisungen}">
-        <td th:text="${Ueberweisung.sender()}">Andrew</td>
-        <td th:text="${Ueberweisung.betrag()}">20</td>
-        <td th:text="${Ueberweisung.empfaenger()}">Raphael</td>
-        <td th:text="${Ueberweisung.gruppe()}">Gruppe 1</td>
+      <tr th:each="ueberweisung: ${ueberweisungen}">
+        <td th:text="${ueberweisung.sender()}">Andrew</td>
+        <td th:text="${ueberweisung.betrag()}">20</td>
+        <td th:text="${ueberweisung.empfaenger()}">Raphael</td>
+        <td th:text="${ueberweisung.gruppe()}">Gruppe 1</td>
       </tr>
       <tr style="background-color: #cbcbcb">
         <td>Jan</td>

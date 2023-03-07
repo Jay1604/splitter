@@ -84,13 +84,13 @@ public class WebController {
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    Set<AusgabeWebobject> history = gruppe.getAusgaben().stream().map(
+    Set<AusgabeWebobject> ausgaben = gruppe.getAusgaben().stream().map(
             e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
                 e.getGlaeubiger().getGitHubName(),
                 String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList())))
         .collect(Collectors.toSet());
     m.addAttribute("gruppe", gruppe);
-    m.addAttribute("history", history);
+    m.addAttribute("ausgaben", ausgaben);
     AusgleichService ausgleichService = new AusgleichService();
     Set<Ueberweisung> ueberweisungen = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
     m.addAttribute("ueberweisungen", ueberweisungen);
@@ -126,7 +126,6 @@ public class WebController {
     return "redirect:/gruppe?nr=" + form.id();
   }
 
-  //TODO: Wenn Transaktion, dann Error
   @GetMapping("/gruppe/personHinzufuegen")
   public String personGruppeHinzufuegenView(Model m,
       @ModelAttribute PersonGruppeHinzufuegenForm personGruppeHinzufuegenForm,
@@ -134,7 +133,7 @@ public class WebController {
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    if (gruppe.isOffen()) {
+    if (gruppe.isOffen() && gruppe.getAusgaben().size() == 0) {
       m.addAttribute("gruppeID", gruppeId);
       return "personGruppeHinzufuegen";
     }
@@ -151,7 +150,7 @@ public class WebController {
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
-    if (!gruppe.isOffen()) {
+    if (!gruppe.isOffen() && gruppe.getAusgaben().size() == 0) {
       throw new GruppeNotFound();
     }
     gruppenService.addPersonToGruppe(HtmlUtils.htmlEscape(form.name()), form.id());
@@ -218,7 +217,7 @@ public class WebController {
                 b -> new UeberweisungWebobject(b.getEmpfaenger().getGitHubName(),
                     b.getBetrag().toString(),
                     b.getSender().getGitHubName(), a.getName()))).collect(Collectors.toSet());
-    model.addAttribute("Ueberweisungen", ueberweisungen);
+    model.addAttribute("ueberweisungen", ueberweisungen);
     return "ueberweisungList";
   }
 
