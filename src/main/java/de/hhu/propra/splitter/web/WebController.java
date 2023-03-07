@@ -47,7 +47,7 @@ public class WebController {
   }
 
   @GetMapping("/")
-  public String index(Model m, OAuth2AuthenticationToken auth) {
+  public String gruppeListView(Model m, OAuth2AuthenticationToken auth) {
     Set<Gruppe> gruppen = gruppenService.getGruppenForGithubName(
         auth.getPrincipal().getAttribute("login"));
 
@@ -57,20 +57,20 @@ public class WebController {
 
     m.addAttribute("offeneGruppen", offeneGruppen);
     m.addAttribute("geschlosseneGruppen", geschlosseneGruppen);
-    return "index";
+    return "gruppeList";
   }
 
   @GetMapping("/gruppe/erstellen")
-  public String gruppeErstellenForm(GruppeErstellenForm gruppeErstellenForm) {
-    return "gruppeHinzufuegen";
+  public String gruppeErstellenView(GruppeErstellenForm gruppeErstellenForm) {
+    return "gruppeErstellen";
   }
 
   @PostMapping("/gruppe/erstellen")
-  public String gruppeHinzufuegen(@Valid GruppeErstellenForm gruppeErstellenForm,
+  public String gruppeErstellen(@Valid GruppeErstellenForm gruppeErstellenForm,
       BindingResult bindingResult, OAuth2AuthenticationToken token, HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      return "gruppeHinzufuegen";
+      return "gruppeErstellen";
     }
     gruppenService.addGruppe(token.getPrincipal().getAttribute("login"),
         HtmlUtils.htmlEscape(gruppeErstellenForm.name()));
@@ -80,7 +80,7 @@ public class WebController {
 
   //TODO: Change MoneyFormat
   @GetMapping("/gruppe")
-  public String gruppeDetails(Model m, OAuth2AuthenticationToken token,
+  public String gruppeDetailsView(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
@@ -98,7 +98,7 @@ public class WebController {
   }
 
   @GetMapping("gruppe/schliessen")
-  public String gruppeschliessenForm(Model m, OAuth2AuthenticationToken token,
+  public String gruppeSchliessenView(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
@@ -110,7 +110,7 @@ public class WebController {
   }
 
   @PostMapping("gruppe/schliessen")
-  public String gruppeschliessen(Model m, OAuth2AuthenticationToken token,
+  public String gruppeSchliessen(Model m, OAuth2AuthenticationToken token,
       @Valid GruppenSchliessenForm form, BindingResult bindingResult,
       HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
@@ -127,8 +127,8 @@ public class WebController {
   }
 
   //TODO: Wenn Transaktion, dann Error
-  @GetMapping("/gruppe/nutzerHinzufuegen")
-  public String nutzerHinzufuegenForm(Model m,
+  @GetMapping("/gruppe/personHinzufuegen")
+  public String personGruppeHinzufuegenView(Model m,
       @ModelAttribute PersonGruppeHinzufuegenForm personGruppeHinzufuegenForm,
       OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
@@ -136,18 +136,18 @@ public class WebController {
         token.getPrincipal().getAttribute("login"), gruppeId);
     if (gruppe.isOffen()) {
       m.addAttribute("gruppeID", gruppeId);
-      return "PersonHinzufuegen";
+      return "personGruppeHinzufuegen";
     }
     return "redirect:/gruppe?nr=" + gruppeId;
   }
 
-  @PostMapping("/gruppe/nutzerHinzufuegen")
-  public String nutzerHinzufuegen(Model m, OAuth2AuthenticationToken token,
+  @PostMapping("/gruppe/personHinzufuegen")
+  public String personGruppeHinzufuegen(Model m, OAuth2AuthenticationToken token,
       @Valid PersonGruppeHinzufuegenForm form, BindingResult bindingResult,
       HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      return "PersonHinzufuegen";
+      return "personGruppeHinzufuegen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
@@ -158,8 +158,8 @@ public class WebController {
     return "redirect:/gruppe?nr=" + form.id();
   }
 
-  @GetMapping("/gruppe/neueTransaktion")
-  public String transaktionHinzufuegenForm(Model m,
+  @GetMapping("/gruppe/ausgabeHinzufuegen")
+  public String ausgabeHinzufuegenView(Model m,
       @ModelAttribute AusgabeHinzufuegenForm ausgabeHinzufuegenForm,
       OAuth2AuthenticationToken token, @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
@@ -167,13 +167,13 @@ public class WebController {
     if (gruppe.isOffen()) {
       m.addAttribute("gruppeId", gruppeId);
       m.addAttribute("mitglieder", gruppe.getMitglieder());
-      return "transaktionHinzufuegen";
+      return "ausgabeHinzufuegen";
     }
     return "redirect:/gruppe?nr=" + gruppeId;
   }
 
-  @PostMapping("/gruppe/neueTransaktion")
-  public String transaktionHinzufuegen(Model m, OAuth2AuthenticationToken token,
+  @PostMapping("/gruppe/ausgabeHinzufuegen")
+  public String ausgabeHinzufuegen(Model m, OAuth2AuthenticationToken token,
       @Valid AusgabeHinzufuegenForm ausgabeHinzufuegenForm, BindingResult bindingResult,
       HttpServletResponse response) {
     if (bindingResult.hasErrors()) {
@@ -185,7 +185,7 @@ public class WebController {
           token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
       m.addAttribute("gruppeId", ausgabeHinzufuegenForm.gruppeId());
       m.addAttribute("mitglieder", gruppe.getMitglieder());
-      return "transaktionHinzufuegen";
+      return "ausgabeHinzufuegen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
@@ -200,13 +200,13 @@ public class WebController {
           ausgabeHinzufuegenForm.glaeubiger(), ausgabeHinzufuegenForm.schuldner());
     } catch (PersonNotFound e) {
       bindingResult.addError(new ObjectError("FormError", "Person nicht gefunden"));
-      return "transaktionHinzufuegen";
+      return "ausgabeHinzufuegen";
     }
     return "redirect:/gruppe?nr=" + ausgabeHinzufuegenForm.gruppeId();
   }
 
-  @GetMapping("/nutzer/uebersicht")
-  public String nutzerUebersicht(Model model, OAuth2AuthenticationToken token) {
+  @GetMapping("/meineUebersicht")
+  public String ueberweisungListForPersonView(Model model, OAuth2AuthenticationToken token) {
     AusgleichService ausgleichService = new AusgleichService();
     Set<UeberweisungWebobject> ueberweisungen = gruppenService
         .getGruppenForGithubName(token
@@ -219,7 +219,7 @@ public class WebController {
                     b.getBetrag().toString(),
                     b.getSender().getGitHubName(), a.getName()))).collect(Collectors.toSet());
     model.addAttribute("Ueberweisungen", ueberweisungen);
-    return "nutzerUebersicht";
+    return "ueberweisungList";
   }
 
 

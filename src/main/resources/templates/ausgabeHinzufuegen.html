@@ -15,7 +15,7 @@
     </h1>
   </header>
   <main class="row">
-    <form th:action="@{/gruppe/neueTransaktion}" method="post"
+    <form th:action="@{/gruppe/ausgabeHinzufuegen}" method="post"
           th:object="${ausgabeHinzufuegenForm}">
       <input type="hidden" th:value="${gruppeId}" name="gruppeId">
       <div>

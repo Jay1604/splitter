@@ -94,7 +94,7 @@ public class ControllerTest {
             post("/gruppe/erstellen")
                 .param("name", "")
                 .with(csrf())
-        ).andExpect(view().name("gruppeHinzufuegen"))
+        ).andExpect(view().name("gruppeErstellen"))
         .andExpect(status().is4xxClientError())
         .andReturn();
   }
@@ -187,19 +187,19 @@ public class ControllerTest {
 
   @Test
   @WithMockOAuth2User(login = "nutzer1")
-  @DisplayName("Route /gruppe/nutzerHinzufuegen?nr= gibt 200 zurück")
+  @DisplayName("Route /gruppe/personHinzufuegen?nr= gibt 200 zurück")
   void test_14() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
-    mvc.perform(get("/gruppe/nutzerHinzufuegen?nr=0"))
+    mvc.perform(get("/gruppe/personHinzufuegen?nr=0"))
         .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("Die private Seite /gruppe/nutzerHinzufuegen ist für "
+  @DisplayName("Die private Seite /gruppe/personHinzufuegen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_15() throws Exception {
-    MvcResult mvcResult = mvc.perform(get("/gruppe/nutzerHinzufuegen?nr=0"))
+    MvcResult mvcResult = mvc.perform(get("/gruppe/personHinzufuegen?nr=0"))
         .andExpect(status().is3xxRedirection())
         .andReturn();
     assertThat(mvcResult.getResponse().getRedirectedUrl())
@@ -208,13 +208,13 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/nutzerHinzufuegen")
+  @DisplayName("Testen des Post Request in /gruppe/personHinzufuegen")
   @WithMockOAuth2User(login = "nutzer1")
   void test_16() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-        post("/gruppe/nutzerHinzufuegen")
+        post("/gruppe/personHinzufuegen")
             .param("id", "0")
             .param("name", "nutzer2")
             .with(csrf())
@@ -224,30 +224,30 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request /gruppe/nutzerHinzufuegen mit leerem Inhalt")
+  @DisplayName("Testen des Post Request /gruppe/personHinzufuegen mit leerem Inhalt")
   @WithMockOAuth2User(login = "nutzer1")
   void test_17() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/nutzerHinzufuegen")
+            post("/gruppe/personHinzufuegen")
                 .param("id", "")
                 .param("name", "")
                 .with(csrf())
-        ).andExpect(view().name("PersonHinzufuegen"))
+        ).andExpect(view().name("personGruppeHinzufuegen"))
         .andExpect(status().is4xxClientError())
         .andReturn();
   }
 
   @Test
-  @DisplayName("Testen des Post Request /gruppe/nutzerHinzufuegen wenn Gruppe geschlossen")
+  @DisplayName("Testen des Post Request /gruppe/personHinzufuegen wenn Gruppe geschlossen")
   @WithMockOAuth2User(login = "nutzer1")
   void test_18() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.setOffen(false);
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/nutzerHinzufuegen")
+            post("/gruppe/personHinzufuegen")
                 .param("id", "0")
                 .param("name", "Nutzer2")
                 .with(csrf())
@@ -258,19 +258,19 @@ public class ControllerTest {
   //region TransaktionsTests
   @Test
   @WithMockOAuth2User(login = "nutzer1")
-  @DisplayName("Route /gruppe/neueTransaktion?nr= gibt 200 zurück")
+  @DisplayName("Route /gruppe/ausgabeHinzufuegen?nr= gibt 200 zurück")
   void test_19() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
-    mvc.perform(get("/gruppe/neueTransaktion?nr=0"))
+    mvc.perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
         .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("Die private Seite /gruppe/neueTransaktion ist für "
+  @DisplayName("Die private Seite /gruppe/ausgabeHinzufuegen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_20() throws Exception {
-    MvcResult mvcResult = mvc.perform(get("/gruppe/neueTransaktion?nr=0"))
+    MvcResult mvcResult = mvc.perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
         .andExpect(status().is3xxRedirection())
         .andReturn();
     assertThat(mvcResult.getResponse().getRedirectedUrl())
@@ -279,14 +279,14 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen")
   @WithMockOAuth2User(login = "nutzer1")
   void test_21() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-        post("/gruppe/neueTransaktion")
+        post("/gruppe/ausgabeHinzufuegen")
             .param("gruppeId", "0")
             .param("betrag", "10.02")
             .param("beschreibung", "test")
@@ -302,14 +302,14 @@ public class ControllerTest {
 
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne gruppeId")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen ohne gruppeId")
   @WithMockOAuth2User(login = "nutzer1")
   void test_22() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/neueTransaktion")
+            post("/gruppe/ausgabeHinzufuegen")
                 .param("gruppeId", "")
                 .param("betrag", "10.02")
                 .param("beschreibung", "test")
@@ -322,14 +322,14 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne betrag")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen ohne betrag")
   @WithMockOAuth2User(login = "nutzer1")
   void test_23() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/neueTransaktion")
+            post("/gruppe/ausgabeHinzufuegen")
                 .param("gruppeId", "0")
                 .param("betrag", "")
                 .param("beschreibung", "test")
@@ -342,14 +342,14 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne beschreibung")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen ohne beschreibung")
   @WithMockOAuth2User(login = "nutzer1")
   void test_24() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/neueTransaktion")
+            post("/gruppe/ausgabeHinzufuegen")
                 .param("gruppeId", "0")
                 .param("betrag", "10.02")
                 .param("beschreibung", "")
@@ -362,14 +362,14 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne glaeubiger")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen ohne glaeubiger")
   @WithMockOAuth2User(login = "nutzer1")
   void test_25() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/neueTransaktion")
+            post("/gruppe/ausgabeHinzufuegen")
                 .param("gruppeId", "0")
                 .param("betrag", "10.02")
                 .param("beschreibung", "test")
@@ -382,14 +382,14 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Testen des Post Request in /gruppe/neueTransaktion ohne schuldner")
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen ohne schuldner")
   @WithMockOAuth2User(login = "nutzer1")
   void test_26() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     mockedResult.addMitglied("nutzer2");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
     mvc.perform(
-            post("/gruppe/neueTransaktion")
+            post("/gruppe/ausgabeHinzufuegen")
                 .param("gruppeId", "0")
                 .param("betrag", "")
                 .param("beschreibung", "test")
@@ -402,19 +402,19 @@ public class ControllerTest {
 
   @Test
   @WithMockOAuth2User(login = "nutzer1")
-  @DisplayName("Route /nutzer/uebersicht gibt 200 zurück")
+  @DisplayName("Route /meineUebersicht gibt 200 zurück")
   void test_27() throws Exception {
     Gruppe mockedResult = new Gruppe(0L, "nutzer1", "Gruppe 1");
     when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockedResult);
-    mvc.perform(get("/nutzer/uebersicht"))
+    mvc.perform(get("/meineUebersicht"))
         .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("Die private Seite /nutzer/uebersicht ist für "
+  @DisplayName("Die private Seite /meineUebersicht ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_28() throws Exception {
-    MvcResult mvcResult = mvc.perform(get("/nutzer/uebersicht"))
+    MvcResult mvcResult = mvc.perform(get("/meineUebersicht"))
         .andExpect(status().is3xxRedirection())
         .andReturn();
     assertThat(mvcResult.getResponse().getRedirectedUrl())
@@ -423,7 +423,7 @@ public class ControllerTest {
   }
 
   @Test
-  @DisplayName("Die  Seite /nutzer/uebersicht stellt alle Transaktion dar")
+  @DisplayName("Die  Seite /meineUebersicht stellt alle Transaktion dar")
   @WithMockOAuth2User(login = "nutzer1")
   void test_29() throws Exception {
     Gruppe mockGruppe = new Gruppe(0L, "nutzer1", "Gruppe 1");
@@ -431,7 +431,7 @@ public class ControllerTest {
     mockGruppe.addAusgabe("test", Money.of(10, "EUR"), "nutzer1", Set.of("nutzer1", "nutzer2"));
     Set<Gruppe> gruppen = Set.of(mockGruppe);
     when(gruppenService.getGruppenForGithubName("nutzer1")).thenReturn(gruppen);
-    mvc.perform(get("/nutzer/uebersicht"))
+    mvc.perform(get("/meineUebersicht"))
         .andExpect(status().isOk())
         .andExpect(content().string(CoreMatchers.containsString("5")));
   }

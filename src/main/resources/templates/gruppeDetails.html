@@ -17,9 +17,9 @@
       <div class="btn-group" th:if="${gruppe.isOffen()}">
         <a th:href="@{gruppe/schliessen(nr=${gruppe.id})}" class="btn btn-outline-primary">Gruppe
           schließen</a>
-        <a th:href="@{gruppe/nutzerHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Nutzer
+        <a th:href="@{gruppe/personHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Nutzer
           hinzufügen</a>
-        <a th:href="@{gruppe/neueTransaktion(nr=${gruppe.id})}" class="btn btn-outline-primary">Neue
+        <a th:href="@{gruppe/ausgabeHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Neue
           Transaktion</a>
       </div>
     </div>
