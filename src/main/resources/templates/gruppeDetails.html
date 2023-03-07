@@ -88,7 +88,7 @@
         <tbody th:remove="all-but-first">
         <tr th:each="ueberweisung: ${ueberweisungen}">
           <td th:text="${ueberweisung.getSender().getGitHubName()}">Andrew</td>
-          <td th:text="${ueberweisung.getBetrag().getNumber()}">20</td>
+          <td th:text="${ueberweisung.getBetrag()}">20</td>
           <td th:text="${ueberweisung.getEmpfaenger().getGitHubName()}">Raphael</td>
         </tr>
         <tr>

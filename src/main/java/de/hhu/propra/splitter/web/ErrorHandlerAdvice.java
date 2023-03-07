@@ -1,6 +1,6 @@
 package de.hhu.propra.splitter.web;
 
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ErrorHandlerAdvice {
 
-  @ExceptionHandler(GruppeNotFound.class)
+  @ExceptionHandler(GruppeNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public String handleException(GruppeNotFound exception) {
+  public String handleException(GruppeNotFoundException exception) {
     return "error/404";
   }
 }

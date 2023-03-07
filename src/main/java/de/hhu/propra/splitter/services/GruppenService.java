@@ -2,7 +2,7 @@ package de.hhu.propra.splitter.services;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class GruppenService {
         .stream()
         .filter(a -> a.getId().equals(gruppenId))
         .findFirst()
-        .orElseThrow(GruppeNotFound::new);
+        .orElseThrow(GruppeNotFoundException::new);
 
     gruppe.addMitglied(githubName);
   }
@@ -52,7 +52,7 @@ public class GruppenService {
             .map(Person::getGitHubName)
             .toList()
             .contains(githubName) && gruppe.getId().equals(id)
-    ).findFirst().orElseThrow(GruppeNotFound::new);
+    ).findFirst().orElseThrow(GruppeNotFoundException::new);
   }
 
   public void schliesseGruppe(long gruppenId) {
@@ -62,7 +62,7 @@ public class GruppenService {
   private Gruppe getGruppeById(long gruppenId) {
     return this.getGruppen().stream().filter(
         gruppe -> gruppe.getId().equals(gruppenId)
-    ).findFirst().orElseThrow(GruppeNotFound::new);
+    ).findFirst().orElseThrow(GruppeNotFoundException::new);
   }
 
   public void addAusgabe(Long gruppenId, String beschreibung, Money betrag, String glaubiger,

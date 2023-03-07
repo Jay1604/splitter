@@ -1,7 +1,7 @@
 package de.hhu.propra.splitter.web.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.PersonGruppeHinzufuegenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -55,7 +55,7 @@ public class PersonGruppeHinzufuegenController {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
     if (!gruppe.isOffen() && gruppe.getAusgaben().size() == 0) {
-      throw new GruppeNotFound();
+      throw new GruppeNotFoundException();
     }
     gruppenService.addPersonToGruppe(HtmlUtils.htmlEscape(form.name()), form.id());
     return "redirect:/gruppe?nr=" + form.id();

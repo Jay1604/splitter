@@ -1,7 +1,7 @@
 package de.hhu.propra.splitter.web.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -51,7 +51,7 @@ public class GruppeSchliessenController {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), form.id());
     if (!gruppe.isOffen()) {
-      throw new GruppeNotFound();
+      throw new GruppeNotFoundException();
     }
     gruppenService.schliesseGruppe(form.id());
     return "redirect:/gruppe?nr=" + form.id();

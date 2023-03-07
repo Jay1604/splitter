@@ -1,7 +1,7 @@
 package de.hhu.propra.splitter.domain.models;
 
 
-import de.hhu.propra.splitter.exceptions.PersonNotFound;
+import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,7 +63,7 @@ public class Gruppe {
         .stream()
         .filter(a -> a.getGitHubName().equals(user))
         .findFirst()
-        .orElseThrow(PersonNotFound::new);
+        .orElseThrow(PersonNotFoundException::new);
   }
 
   public void setOffen(boolean offen) {

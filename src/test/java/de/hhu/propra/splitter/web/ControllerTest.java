@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
 import java.util.Set;
@@ -128,7 +128,8 @@ public class ControllerTest {
   @WithMockOAuth2User(login = "nutzer1")
   @DisplayName("Route /gruppe?nr=<gruppeId> gibt 404 zurück, wenn die Gruppe nicht existiert")
   void test_9() throws Exception {
-    when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenThrow(GruppeNotFound.class);
+    when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenThrow(
+        GruppeNotFoundException.class);
     mvc.perform(get("/gruppe?nr=0"))
         .andExpect(status().is(404));
   }

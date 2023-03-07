@@ -28,7 +28,6 @@ public class GruppeDetailsController {
     this.gruppenService = gruppenService;
   }
 
-  //TODO: Change MoneyFormat
   @GetMapping("/gruppe")
   public String gruppeDetailsView(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
@@ -36,7 +35,7 @@ public class GruppeDetailsController {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         username, gruppeId);
     Set<AusgabeWebobject> ausgaben = gruppe.getAusgaben().stream().map(
-            e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
+            e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().toString(),
                 e.getGlaeubiger().getGitHubName(),
                 String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList()),
                 (username.equals(e.getGlaeubiger().getGitHubName()) || e.getSchuldner().stream()

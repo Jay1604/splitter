@@ -1,8 +1,8 @@
 package de.hhu.propra.splitter.web.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
-import de.hhu.propra.splitter.exceptions.GruppeNotFound;
-import de.hhu.propra.splitter.exceptions.PersonNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
+import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.AusgabeHinzufuegenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,7 +53,7 @@ public class AusgabeHinzufuegenController {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       if (ausgabeHinzufuegenForm.gruppeId() == null) {
-        throw new GruppeNotFound();
+        throw new GruppeNotFoundException();
       }
       Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
           token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
@@ -64,7 +64,7 @@ public class AusgabeHinzufuegenController {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
     if (!gruppe.isOffen()) {
-      throw new GruppeNotFound();
+      throw new GruppeNotFoundException();
     }
 
     try {
@@ -72,7 +72,7 @@ public class AusgabeHinzufuegenController {
           ausgabeHinzufuegenForm.beschreibung(),
           Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
           ausgabeHinzufuegenForm.glaeubiger(), ausgabeHinzufuegenForm.schuldner());
-    } catch (PersonNotFound e) {
+    } catch (PersonNotFoundException e) {
       bindingResult.addError(new ObjectError("FormError", "Person nicht gefunden"));
       return "ausgabeHinzufuegen";
     }
