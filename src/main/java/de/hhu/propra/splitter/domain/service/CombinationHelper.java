@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class AllCombinations {
+class CombinationHelper {
 
-  public static <T> Set<Set<T>> allCombinations(List<T> items) {
+  public static <T> Set<Set<T>> allCombinationsOf(List<T> items) {
     return addAndNot(new HashSet<Set<T>>(
         Set.of(new HashSet<>())
     ), items);

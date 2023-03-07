@@ -92,7 +92,7 @@ public class WebController {
     m.addAttribute("gruppe", gruppe);
     m.addAttribute("history", history);
     AusgleichService ausgleichService = new AusgleichService();
-    Set<Ueberweisung> ueberweisungen = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ueberweisungen = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
     m.addAttribute("ueberweisungen", ueberweisungen);
     return "gruppeDetails";
   }
@@ -214,7 +214,7 @@ public class WebController {
             .getAttribute("login")
         ).stream()
         .flatMap(
-            a -> ausgleichService.ausgleichen(a).stream().map(
+            a -> ausgleichService.berechneAusgleichUeberweisungen(a).stream().map(
                 b -> new WebTransaktion(b.getSender().getGitHubName(), b.getBetrag().toString(),
                     b.getEmpfaenger().getGitHubName(), a.getName()))).collect(Collectors.toSet());
     model.addAttribute("Ueberweisungen", ueberweisungen);

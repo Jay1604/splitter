@@ -16,25 +16,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class AusgleichService {
 
-  private HashMap<Person, Money> schuldenBerechnen(Gruppe gruppe) {
-    HashMap<Person, Money> debts = new HashMap<>();
+  private HashMap<Person, Money> berechneSchulden(Gruppe gruppe) {
+    HashMap<Person, Money> schulden = new HashMap<>();
     for (Ausgabe ausgabe : gruppe.getAusgaben()) {
-      Money[] anteilAndRemainder = ausgabe.getBetrag()
+      Money[] shareAndRemainder = ausgabe.getBetrag()
           .divideAndRemainder(ausgabe.getSchuldner().size());
-      Money anteil = anteilAndRemainder[0];
-      Money remainder = anteilAndRemainder[1];
-      debts.put(ausgabe.getGlaeubiger(),
-          debts.getOrDefault(
+      Money share = shareAndRemainder[0];
+      Money remainder = shareAndRemainder[1];
+      schulden.put(ausgabe.getGlaeubiger(),
+          schulden.getOrDefault(
               ausgabe.getGlaeubiger(),
               Money.of(0, "EUR")
           ).add(ausgabe.getBetrag())
       );
       for (Person schuldner : ausgabe.getSchuldner()) {
-        debts.put(schuldner,
-            debts.getOrDefault(
+        schulden.put(schuldner,
+            schulden.getOrDefault(
                 schuldner,
                 Money.of(0, "EUR")
-            ).subtract(anteil)
+            ).subtract(share)
         );
       }
       while (!remainder.isZero()) {
@@ -43,8 +43,8 @@ public class AusgleichService {
             break;
           }
           remainder = remainder.subtract(Money.of(0.01, "EUR"));
-          debts.put(schuldner,
-              debts.getOrDefault(
+          schulden.put(schuldner,
+              schulden.getOrDefault(
                   schuldner,
                   Money.of(0, "EUR")
               ).subtract(Money.of(0.01, "EUR"))
@@ -53,27 +53,27 @@ public class AusgleichService {
       }
     }
 
-    return debts;
+    return schulden;
   }
 
-  public Set<Ueberweisung> ausgleichen(Gruppe gruppe) {
+  public Set<Ueberweisung> berechneAusgleichUeberweisungen(Gruppe gruppe) {
     Set<Ueberweisung> ueberweisungen = new HashSet<>();
-    HashMap<Person, Money> debts = schuldenBerechnen(gruppe);
-    while (debts.values().stream().filter(value -> !value.isZero()).toList().size() > 0) {
-      findPerfectMatch(ueberweisungen, debts);
-      findGreedy(ueberweisungen, debts);
+    HashMap<Person, Money> schulden = berechneSchulden(gruppe);
+    while (schulden.values().stream().filter(schuld -> !schuld.isZero()).toList().size() > 0) {
+      fillPerfectMatch(ueberweisungen, schulden);
+      fillGreedy(ueberweisungen, schulden);
     }
     return ueberweisungen;
   }
 
-  private void findPerfectMatch(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
+  private void fillPerfectMatch(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
     for (var dept : debts.entrySet()) {
       if (dept.getValue().isZero()) {
         continue;
       }
 
       // Find perfect combination (subset of debts)
-      var combinations = AllCombinations.allCombinations(
+      var combinations = CombinationHelper.allCombinationsOf(
           // Only negative Money values if dept is positive and via versa
           debts.entrySet().stream().filter(
               entry -> (entry.getValue().isNegative() && dept.getValue().isPositive())
@@ -112,34 +112,10 @@ public class AusgleichService {
           debts.put(partnerEntry.getKey(), Money.of(0, "EUR"));
         }
       }
-
-      //      Optional<Entry<Person, Money>> perfectMatch = debts.entrySet().stream().filter(
-      //          entry -> entry.getValue().equals(dept.getValue().multiply(-1))
-      //      ).findFirst();
-      //      if (perfectMatch.isPresent()) {
-      //        // Check who needs to send money
-      //        if (dept.getValue().isNegative()) {
-      //          ueberweisungen.add(new Ueberweisung(
-      //              dept.getKey(),
-      //              perfectMatch.get().getKey(),
-      //              perfectMatch.get().getValue()
-      //          ));
-      //        } else {
-      //          ueberweisungen.add(new Ueberweisung(
-      //              perfectMatch.get().getKey(),
-      //              dept.getKey(),
-      //              dept.getValue()
-      //          ));
-      //          // After perfect match both have 0 dept
-      //
-      //        }
-      //        debts.put(dept.getKey(), Money.of(0, "EUR"));
-      //        debts.put(perfectMatch.get().getKey(), Money.of(0, "EUR"));
-      //      }
     }
   }
 
-  private void findGreedy(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
+  private void fillGreedy(Set<Ueberweisung> ueberweisungen, HashMap<Person, Money> debts) {
     Optional<Entry<Person, Money>> max = debts.entrySet().stream().max(Entry.comparingByValue());
     Optional<Entry<Person, Money>> min = debts.entrySet().stream().min(Entry.comparingByValue());
     if (min.isPresent() && max.isPresent() && !max.get().getValue().isZero()) {

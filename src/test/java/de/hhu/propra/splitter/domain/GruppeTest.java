@@ -36,7 +36,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(40, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -52,7 +52,7 @@ public class GruppeTest {
   void test_02() {
     Gruppe gruppe = new GruppeFactory().build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
     assertThat(ausgleich).isEmpty();
   }
 
@@ -75,7 +75,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(40, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
         Ueberweisung::getBetrag
@@ -108,7 +108,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(30, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -138,7 +138,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(100, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -168,7 +168,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(20, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -197,7 +197,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(20, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -226,7 +226,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(20, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -259,7 +259,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(10, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).isEmpty();
   }
@@ -285,7 +285,7 @@ public class GruppeTest {
             )).withBetrag(Money.of(100, "EUR")).build()
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -332,7 +332,7 @@ public class GruppeTest {
 
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
@@ -388,7 +388,7 @@ public class GruppeTest {
 
         )).build();
 
-    Set<Ueberweisung> ausgleich = ausgleichService.ausgleichen(gruppe);
+    Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
     assertThat(ausgleich).extracting(
         (a -> a.getSender().getGitHubName()),
