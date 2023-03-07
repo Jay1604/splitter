@@ -13,8 +13,8 @@ import de.hhu.propra.splitter.web.forms.AusgabeHinzufuegenForm;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;
 import de.hhu.propra.splitter.web.forms.PersonGruppeHinzufuegenForm;
-import de.hhu.propra.splitter.web.objects.WebAusgabe;
-import de.hhu.propra.splitter.web.objects.WebTransaktion;
+import de.hhu.propra.splitter.web.objects.AusgabeWebobject;
+import de.hhu.propra.splitter.web.objects.UeberweisungWebobject;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,8 +84,8 @@ public class WebController {
       @RequestParam(value = "nr") long gruppeId) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token.getPrincipal().getAttribute("login"), gruppeId);
-    Set<WebAusgabe> history = gruppe.getAusgaben().stream().map(
-            e -> new WebAusgabe(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
+    Set<AusgabeWebobject> history = gruppe.getAusgaben().stream().map(
+            e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
                 e.getGlaeubiger().getGitHubName(),
                 String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList())))
         .collect(Collectors.toSet());
@@ -208,15 +208,16 @@ public class WebController {
   @GetMapping("/nutzer/uebersicht")
   public String nutzerUebersicht(Model model, OAuth2AuthenticationToken token) {
     AusgleichService ausgleichService = new AusgleichService();
-    Set<WebTransaktion> ueberweisungen = gruppenService
+    Set<UeberweisungWebobject> ueberweisungen = gruppenService
         .getGruppenForGithubName(token
             .getPrincipal()
             .getAttribute("login")
         ).stream()
         .flatMap(
             a -> ausgleichService.berechneAusgleichUeberweisungen(a).stream().map(
-                b -> new WebTransaktion(b.getSender().getGitHubName(), b.getBetrag().toString(),
-                    b.getEmpfaenger().getGitHubName(), a.getName()))).collect(Collectors.toSet());
+                b -> new UeberweisungWebobject(b.getEmpfaenger().getGitHubName(),
+                    b.getBetrag().toString(),
+                    b.getSender().getGitHubName(), a.getName()))).collect(Collectors.toSet());
     model.addAttribute("Ueberweisungen", ueberweisungen);
     return "nutzerUebersicht";
   }
