@@ -1,4 +1,4 @@
-package de.hhu.propra.splitter.domain.service;
+package de.hhu.propra.splitter.domain.services;
 
 import java.util.HashSet;
 import java.util.List;

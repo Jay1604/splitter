@@ -4,9 +4,9 @@ package de.hhu.propra.splitter.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Ueberweisung;
-import de.hhu.propra.splitter.domain.service.AusgleichService;
+import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.domain.models.Ueberweisung;
+import de.hhu.propra.splitter.domain.services.AusgleichService;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
 import java.util.Set;

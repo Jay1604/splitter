@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.exception.GruppeNotFound;
+import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.exceptions.GruppeNotFound;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
 import java.util.Set;

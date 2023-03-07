@@ -1,7 +1,7 @@
-package de.hhu.propra.splitter.domain.model;
+package de.hhu.propra.splitter.domain.models;
 
 
-import de.hhu.propra.splitter.exception.PersonNotFound;
+import de.hhu.propra.splitter.exceptions.PersonNotFound;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -2,12 +2,12 @@ package de.hhu.propra.splitter.web;
 
 import static java.util.function.Predicate.not;
 
-import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
-import de.hhu.propra.splitter.domain.model.Ueberweisung;
-import de.hhu.propra.splitter.domain.service.AusgleichService;
-import de.hhu.propra.splitter.exception.GruppeNotFound;
-import de.hhu.propra.splitter.exception.PersonNotFound;
+import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.domain.models.Person;
+import de.hhu.propra.splitter.domain.models.Ueberweisung;
+import de.hhu.propra.splitter.domain.services.AusgleichService;
+import de.hhu.propra.splitter.exceptions.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.PersonNotFound;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.GruppeErstellenForm;
 import de.hhu.propra.splitter.web.forms.GruppenSchliessenForm;

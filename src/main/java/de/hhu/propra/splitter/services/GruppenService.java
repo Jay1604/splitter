@@ -1,8 +1,8 @@
 package de.hhu.propra.splitter.services;
 
-import de.hhu.propra.splitter.domain.model.Gruppe;
-import de.hhu.propra.splitter.domain.model.Person;
-import de.hhu.propra.splitter.exception.GruppeNotFound;
+import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.domain.models.Person;
+import de.hhu.propra.splitter.exceptions.GruppeNotFound;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

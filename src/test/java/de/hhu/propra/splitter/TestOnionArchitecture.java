@@ -12,10 +12,11 @@ import com.tngtech.archunit.lang.ArchRule;
     importOptions = ImportOption.DoNotIncludeTests.class
 )
 public class TestOnionArchitecture {
+
   @ArchTest
   static final ArchRule isOnionArchitecture = onionArchitecture()
-      .domainModels("..domain.model..")
-      .domainServices("..domain.service..")
+      .domainModels("..domain.models..")
+      .domainServices("..domain.services..")
       .applicationServices("..services..")
       .adapter("database", "..persistence..")
       .adapter("web", "..web..");

@@ -2,7 +2,7 @@ package de.hhu.propra.splitter.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.hhu.propra.splitter.domain.model.Gruppe;
+import de.hhu.propra.splitter.domain.models.Gruppe;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

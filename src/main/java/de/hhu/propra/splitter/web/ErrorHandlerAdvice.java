@@ -1,6 +1,6 @@
 package de.hhu.propra.splitter.web;
 
-import de.hhu.propra.splitter.exception.GruppeNotFound;
+import de.hhu.propra.splitter.exceptions.GruppeNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
