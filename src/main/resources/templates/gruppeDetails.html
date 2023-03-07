@@ -54,7 +54,7 @@
         </tr>
         </thead>
         <tbody th:remove="all-but-first">
-        <tr th:each="ausgabe: ${ausgaben}">
+        <tr th:each="ausgabe: ${ausgaben}" th:class="${ausgabe.isHighlighted()?'bg-light':''}">
           <td th:text="${ausgabe.glaeubiger()}">Andrew</td>
           <td th:text="${ausgabe.betrag()}">20</td>
           <td th:text="${ausgabe.schuldner()}" style="max-width: 200px;">Raphael</td>

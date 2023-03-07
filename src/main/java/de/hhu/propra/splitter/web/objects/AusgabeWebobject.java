@@ -5,7 +5,8 @@ public record AusgabeWebobject(
 
     String betrag,
     String glaeubiger,
-    String schuldner
+    String schuldner,
+    Boolean isHighlighted
 ) {
 
 }

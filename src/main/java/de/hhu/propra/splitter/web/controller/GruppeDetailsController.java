@@ -32,12 +32,15 @@ public class GruppeDetailsController {
   @GetMapping("/gruppe")
   public String gruppeDetailsView(Model m, OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId) {
+    String username = token.getPrincipal().getAttribute("login");
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), gruppeId);
+        username, gruppeId);
     Set<AusgabeWebobject> ausgaben = gruppe.getAusgaben().stream().map(
             e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().getNumber().toString(),
                 e.getGlaeubiger().getGitHubName(),
-                String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList())))
+                String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList()),
+                (username.equals(e.getGlaeubiger().getGitHubName()) || e.getSchuldner().stream()
+                    .map(Person::getGitHubName).toList().contains(username))))
         .collect(Collectors.toSet());
     m.addAttribute("gruppe", gruppe);
     m.addAttribute("ausgaben", ausgaben);
