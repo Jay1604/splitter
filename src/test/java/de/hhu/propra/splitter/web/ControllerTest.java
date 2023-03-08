@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import de.hhu.propra.splitter.config.SecurityConfig;
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
@@ -20,12 +21,14 @@ import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest
+@ImportAutoConfiguration(classes = SecurityConfig.class)
 public class ControllerTest {
 
   @Autowired

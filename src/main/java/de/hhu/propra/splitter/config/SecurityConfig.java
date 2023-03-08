@@ -10,12 +10,15 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain configure(HttpSecurity chainBuilder) throws Exception {
     chainBuilder
+        .csrf().ignoringAntMatchers("/api/*").and()
         .authorizeHttpRequests(
             configurer -> configurer
-                .antMatchers("/public", "/css/*", "/favicon.ico")
+                .antMatchers("/public", "/css/*", "/favicon.ico", "/api/*")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
+
+
         )
         .oauth2Login(config ->
             config.userInfoEndpoint(
