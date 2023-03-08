@@ -59,7 +59,7 @@ public class GruppenService {
     getGruppeById(gruppenId).setOffen(false);
   }
 
-  private Gruppe getGruppeById(long gruppenId) {
+  public Gruppe getGruppeById(long gruppenId) {
     return this.getGruppen().stream().filter(
         gruppe -> gruppe.getId().equals(gruppenId)
     ).findFirst().orElseThrow(GruppeNotFoundException::new);

@@ -9,9 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.hhu.propra.splitter.config.SecurityConfig;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
+import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
 import de.hhu.propra.splitter.services.GruppenService;
 import java.util.Set;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,4 +78,42 @@ public class RestControllerTest {
 
   }
 
+  @Test
+  @DisplayName("Details für existierende Gruppe ausgeben")
+  void test_5(
+  ) throws Exception {
+    when(gruppenService.getGruppeById(0L)).thenReturn(
+        new GruppeFactory()
+            .withId(0L)
+            .withName("Tour 2023")
+            .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+            .withAusgaben(Set.of(
+                new AusgabeFactory()
+                    .withBeschreibung("Black Paint")
+                    .withBetrag(Money.of(25.99, "EUR"))
+                    .withGlaeubiger("Keith")
+                    .withSchuldner(Set.of("Mick", "Keith", "Ronnie"))
+                    .build()
+            )).build());
+
+    mvc.perform(get("/api/gruppen/0"))
+        .andExpect(status().is(200)).andExpect(
+            content().json(
+                "{\"gruppe\" : \"0\", \"name\" : \"Tour 2023\","
+                    + " \"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"], "
+                    + " \"geschlossen\": false, "
+                    + " \"ausgaben\" : [{\"grund\": \"Black Paint\","
+                    + " \"glaeubiger\": \"Keith\", \"cent\" : 2599,"
+                    + " \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}]}"));
+  }
+
+  @Test
+  @DisplayName("Wenn keine Gruppe existiert, dann 404")
+  void test_6() throws Exception {
+    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+
+    mvc.perform(get("/api/gruppen/0"))
+        .andExpect(status().is(404));
+
+  }
 }

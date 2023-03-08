@@ -1,8 +1,11 @@
 package de.hhu.propra.splitter.web.rest.controller;
 
+import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
 import de.hhu.propra.splitter.services.GruppenService;
-import de.hhu.propra.splitter.web.rest.objects.Gruppe;
+import de.hhu.propra.splitter.web.rest.objects.AusgabeEntity;
+import de.hhu.propra.splitter.web.rest.objects.DetailedGruppeEntity;
+import de.hhu.propra.splitter.web.rest.objects.SimpleGruppenEntity;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +33,7 @@ public class GruppenController {
 
   @PostMapping("/gruppen")
   public ResponseEntity<String> gruppeErstellen(
-      @RequestBody @Valid Gruppe gruppe,
+      @RequestBody @Valid SimpleGruppenEntity gruppe,
       BindingResult bindingResult
   ) {
     if (bindingResult.hasErrors()) {
@@ -46,13 +49,30 @@ public class GruppenController {
 
 
   @GetMapping("/user/{GITHUB-LOGIN}/gruppen")
-  public List<Gruppe> allGruppenForUser(
+  public List<SimpleGruppenEntity> allGruppenForUser(
       @PathVariable("GITHUB-LOGIN") String login
   ) {
     Set<de.hhu.propra.splitter.domain.models.Gruppe> gruppen =
         gruppenService.getGruppenForGithubName(login);
 
-    return gruppen.stream().map(a -> new Gruppe(a.getId().toString(), a.getName(),
+    return gruppen.stream().map(a -> new SimpleGruppenEntity(a.getId().toString(), a.getName(),
         a.getMitglieder().stream().map(Person::getGitHubName).toList())).toList();
   }
+
+  @GetMapping("/gruppen/{id}")
+  public DetailedGruppeEntity gruppenDetailsById(@PathVariable("id") Long gruppenId) {
+    Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
+
+    return new DetailedGruppeEntity(gruppenId.toString(), gruppe.getName(),
+        gruppe.getMitglieder().stream().map(Person::getGitHubName).toList(), !gruppe.isOffen(),
+        gruppe.getAusgaben().stream().map(
+                a -> new AusgabeEntity(
+                    a.getBeschreibung(),
+                    a.getGlaeubiger().getGitHubName(),
+                    a.getBetrag().multiply(100L).getNumber().intValue(), //TODO:...
+                    a.getSchuldner().stream().map(Person::getGitHubName).toList()
+                )).toList());
+  }
+
+
 }
