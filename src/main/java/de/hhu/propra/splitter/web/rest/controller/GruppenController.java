@@ -1,10 +1,17 @@
 package de.hhu.propra.splitter.web.rest.controller;
 
+import de.hhu.propra.splitter.domain.models.Person;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.rest.objects.Gruppe;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.List;
+import java.util.Set;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +30,12 @@ public class GruppenController {
 
   @PostMapping("/gruppen")
   public ResponseEntity<String> gruppeErstellen(
-      @RequestBody Gruppe gruppe
+      @RequestBody @Valid Gruppe gruppe,
+      BindingResult bindingResult
   ) {
+    if (bindingResult.hasErrors()) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
     Long gruppenId = gruppenService.addGruppe(gruppe.personen().get(0), gruppe.name());
     for (String person : gruppe.personen().stream().skip(1).toList()) {
       gruppenService.addPersonToGruppe(person, gruppenId);
@@ -34,4 +45,14 @@ public class GruppenController {
   }
 
 
+  @GetMapping("/user/{GITHUB-LOGIN}/gruppen")
+  public List<Gruppe> allGruppenForUser(
+      @PathVariable("GITHUB-LOGIN") String login
+  ) {
+    Set<de.hhu.propra.splitter.domain.models.Gruppe> gruppen =
+        gruppenService.getGruppenForGithubName(login);
+
+    return gruppen.stream().map(a -> new Gruppe(a.getId().toString(), a.getName(),
+        a.getMitglieder().stream().map(Person::getGitHubName).toList())).toList();
+  }
 }
