@@ -1,9 +1,9 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.6'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'checkstyle'
-	id "com.github.spotbugs" version "5.0.13"
+    id 'java'
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'checkstyle'
+    id "com.github.spotbugs" version "5.0.13"
 }
 
 group = 'de.hhu.propra'
@@ -11,60 +11,67 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.javamoney:moneta:1.4.2'
+    implementation 'org.javamoney:moneta:1.4.2'
 
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-	// Tests
-	testImplementation 'com.tngtech.archunit:archunit-junit5:1.0.1'
-	testImplementation 'org.assertj:assertj-core:3.19.0'
-	testImplementation 'org.mockito:mockito-core:4.5.1'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    // Tests
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.0.1'
+    testImplementation 'org.assertj:assertj-core:3.19.0'
+    testImplementation 'org.mockito:mockito-core:4.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
 
-	// DB
-	// implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	// testRuntimeOnly 'com.h2database:h2'
-	// runtimeOnly 'org.postgresql:postgresql'
-	// implementation 'org.flywaydb:flyway-core'
+    // DB
+    // implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    // testRuntimeOnly 'com.h2database:h2'
+    // runtimeOnly 'org.postgresql:postgresql'
+    // implementation 'org.flywaydb:flyway-core'
 
-	//
-	implementation 'com.github.spotbugs:spotbugs-annotations:4.7.3'
+    //
+    implementation 'com.github.spotbugs:spotbugs-annotations:4.7.3'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 checkstyle {
-	configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-	configProperties = [
-			"org.checkstyle.google.suppressionfilter.config":
-					"${projectDir}/config/checkstyle/checkstyle-suppressions.xml",
-	]
-	toolVersion = '10.5.0'
-	ignoreFailures = false
-	maxWarnings = 0
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    configProperties = [
+            "org.checkstyle.google.suppressionfilter.config":
+                    "${projectDir}/config/checkstyle/checkstyle-suppressions.xml",
+    ]
+    toolVersion = '10.5.0'
+    ignoreFailures = false
+    maxWarnings = 0
 }
 
 spotbugs {
-	effort = "max"
+    effort = "max"
 }
 
-tasks.matching {task -> task.name.startsWith('spotbugs')}.forEach {
-	it.reports {
-		html.enabled = true
-		xml.enabled = false // spotbugs does not allow to generate a xml and html report at once https://github.com/spotbugs/spotbugs/issues/857
-	}
+tasks.matching { task -> task.name.startsWith('spotbugs') }.forEach {
+    it.reports {
+        html.enabled = true
+        xml.enabled = false
+        // spotbugs does not allow to generate a xml and html report at once https://github.com/spotbugs/spotbugs/issues/857
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.hhu.propra.splitter.SplitterApplication'
+    }
 }

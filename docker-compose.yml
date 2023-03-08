@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CLIENT_ID=${CLIENT_ID}
+        - CLIENT_SECRET=${CLIENT_SECRET}
+    ports:
+      - "9000:9000"
+    container_name: web
+    image: splitter
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB=${DATABASE_DB}"
+      - "POSTGRES_USER=${DATABASE_USERNAME}"
+      - "POSTGRES_PASSWORD=${DATABASE_PASSWORD}"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    container_name: db

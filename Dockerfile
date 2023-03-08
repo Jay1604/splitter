@@ -1,0 +1,30 @@
+FROM gradle:8.0.2-jdk17 AS TEMP_BUILD_IMAGE
+ARG CLIENT_ID
+ARG CLIENT_SECRET
+ENV APP_HOME=/usr/app/
+ENV CLIENT_ID $CLIENT_ID
+ENV CLIENT_SECRET $CLIENT_SECRET
+
+WORKDIR $APP_HOME
+COPY build.gradle settings.gradle $APP_HOME
+COPY gradle $APP_HOME/gradle
+COPY --chown=gradle:gradle src $APP_HOME/src
+COPY --chown=gradle:gradle config $APP_HOME/config
+
+RUN gradle clean build
+
+# actual container
+FROM amazoncorretto:17
+ENV ARTIFACT_NAME=splitter-0.0.1-SNAPSHOT.jar
+ENV APP_HOME=/usr/app/
+
+ARG CLIENT_ID
+ARG CLIENT_SECRET
+ENV CLIENT_ID $CLIENT_ID
+ENV CLIENT_SECRET $CLIENT_SECRET
+
+WORKDIR $APP_HOME
+COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
+
+EXPOSE 9000
+ENTRYPOINT exec java -jar ${ARTIFACT_NAME}
