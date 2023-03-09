@@ -2,11 +2,13 @@ package de.hhu.propra.splitter.web.rest.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
+import de.hhu.propra.splitter.domain.services.AusgleichService;
 import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.rest.objects.AusgabeEntity;
 import de.hhu.propra.splitter.web.rest.objects.DetailedGruppeEntity;
 import de.hhu.propra.splitter.web.rest.objects.SimpleGruppenEntity;
+import de.hhu.propra.splitter.web.rest.objects.UeberweisungEntity;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.List;
@@ -114,5 +116,20 @@ public class GruppenController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  @GetMapping("/gruppen/{id}/ausgleich")
+  public List<UeberweisungEntity> getUeberweisungenForGruppe(
+      @PathVariable("id") Long gruppenId
+  ) {
+    Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
+    AusgleichService ausgleichService = new AusgleichService();
+    return ausgleichService.berechneAusgleichUeberweisungen(gruppe).stream().map(
+        ueberweisung -> new UeberweisungEntity(
+            ueberweisung.getSender().getGitHubName(),
+            ueberweisung.getEmpfaenger().getGitHubName(),
+            ueberweisung.getBetrag().multiply(100L).getNumber().intValue()
+        )
+    ).toList();
   }
 }

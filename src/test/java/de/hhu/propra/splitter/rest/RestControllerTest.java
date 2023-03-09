@@ -235,4 +235,41 @@ public class RestControllerTest {
                 + "\"cent\" : 2599}"))
         .andExpect(status().is(400));
   }
+
+  @Test
+  @DisplayName("Ausgleich Ueberweisungen für Gruppe ausgeben")
+  void test_16() throws Exception {
+    when(gruppenService.getGruppeById(0L)).thenReturn(
+        new GruppeFactory()
+            .withId(0L)
+            .withName("Tour 2023")
+            .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+            .withAusgaben(Set.of(
+                new AusgabeFactory()
+                    .withBeschreibung("Black Paint")
+                    .withBetrag(Money.of(25.98, "EUR"))
+                    .withGlaeubiger("Keith")
+                    .withSchuldner(Set.of("Mick", "Keith", "Ronnie"))
+                    .build()
+            )).build());
+
+    mvc.perform(get("/api/gruppen/0/ausgleich"))
+        .andExpect(status().is(200)).andExpect(
+            content().json(
+                "[{\"von\" : \"Mick\","
+                    + "\"an\" : \"Keith\","
+                    + "\"cents\" : 866},"
+                    + "{\"von\" : \"Ronnie\","
+                    + "\"an\" : \"Keith\","
+                    + "\"cents\" : 866}]"));
+  }
+
+  @Test
+  @DisplayName("Ausgleich Ueberweisungen für Gruppe ausgeben gibt 404, wenn Gruppe nicht existiert")
+  void test_17() throws Exception {
+    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+
+    mvc.perform(get("/api/gruppen/0/ausgleich"))
+        .andExpect(status().is(404));
+  }
 }
