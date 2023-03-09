@@ -13,3 +13,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/${DATABASE_DB}
 server:
   port: 9000
+logging:
+  level:
+    org.springframework.jdbc.core: trace

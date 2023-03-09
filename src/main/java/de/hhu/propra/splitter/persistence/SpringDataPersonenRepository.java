@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SpringDataGruppenRepository extends CrudRepository<Gruppe, Integer> {
+public interface SpringDataPersonenRepository extends CrudRepository<Person, Integer> {
   @Nonnull
-  List<Gruppe> findAll();
+  List<Person> findAll();
 }

@@ -1,5 +1,7 @@
 package de.hhu.propra.splitter.persistence;
 
-public record Person(Integer id, String gitHubName) {
+import org.springframework.data.annotation.Id;
+
+public record Person(@Id Integer id, String gitHubName) {
 
 }
