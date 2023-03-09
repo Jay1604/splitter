@@ -65,6 +65,16 @@ public class GruppenService {
     ).findFirst().orElseThrow(GruppeNotFoundException::new);
   }
 
+  public Gruppe getGruppeById(String gruppenId) {
+    long id;
+    try {
+      id = Long.parseLong(gruppenId);
+    } catch (NumberFormatException e) {
+      throw new GruppeNotFoundException();
+    }
+    return this.getGruppeById(id);
+  }
+
   public void addAusgabe(Long gruppenId, String beschreibung, Money betrag, String glaubiger,
       Set<String> schuldner) {
     Gruppe gruppe = getGruppeById(gruppenId);

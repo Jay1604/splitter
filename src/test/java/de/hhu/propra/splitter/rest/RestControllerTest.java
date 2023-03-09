@@ -84,7 +84,7 @@ public class RestControllerTest {
   @DisplayName("Details für existierende Gruppe ausgeben")
   void test_5(
   ) throws Exception {
-    when(gruppenService.getGruppeById(0L)).thenReturn(
+    when(gruppenService.getGruppeById("0")).thenReturn(
         new GruppeFactory()
             .withId(0L)
             .withName("Tour 2023")
@@ -112,7 +112,7 @@ public class RestControllerTest {
   @Test
   @DisplayName("Wenn keine Gruppe existiert, dann 404")
   void test_6() throws Exception {
-    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+    when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
     mvc.perform(get("/api/gruppen/0"))
         .andExpect(status().is(404));
@@ -122,6 +122,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Schliese Gruppe, wenn alles korrekt")
   void test_7() throws Exception {
+    when(gruppenService.getGruppeById("0"))
+        .thenReturn(new GruppeFactory().withId(0).build());
     mvc.perform(post("/api/gruppen/0/schliessen"))
         .andExpect(status().is(200));
 
@@ -131,6 +133,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Schliese Gruppe gibt 404, wenn Gruppe nicht existiert")
   void test_8() throws Exception {
+    when(gruppenService.getGruppeById("0"))
+        .thenReturn(new GruppeFactory().withId(0).build());
     doThrow(GruppeNotFoundException.class).when(gruppenService).schliesseGruppe(0);
 
     mvc.perform(post("/api/gruppen/0/schliessen"))
@@ -147,7 +151,7 @@ public class RestControllerTest {
         .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
         .build();
 
-    when(gruppenService.getGruppeById(0L)).thenReturn(mockedResult);
+    when(gruppenService.getGruppeById("0")).thenReturn(mockedResult);
 
     mvc.perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +171,7 @@ public class RestControllerTest {
   @Test
   @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 404, wenn Gruppe nicht existiert")
   void test_10() throws Exception {
-    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+    when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
     mvc.perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +191,7 @@ public class RestControllerTest {
         .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
         .build();
 
-    when(gruppenService.getGruppeById(0L)).thenReturn(mockedResult);
+    when(gruppenService.getGruppeById("0")).thenReturn(mockedResult);
 
     mvc.perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
@@ -239,7 +243,7 @@ public class RestControllerTest {
   @Test
   @DisplayName("Ausgleich Ueberweisungen für Gruppe ausgeben")
   void test_16() throws Exception {
-    when(gruppenService.getGruppeById(0L)).thenReturn(
+    when(gruppenService.getGruppeById("0")).thenReturn(
         new GruppeFactory()
             .withId(0L)
             .withName("Tour 2023")
@@ -267,7 +271,7 @@ public class RestControllerTest {
   @Test
   @DisplayName("Ausgleich Ueberweisungen für Gruppe ausgeben gibt 404, wenn Gruppe nicht existiert")
   void test_17() throws Exception {
-    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+    when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
     mvc.perform(get("/api/gruppen/0/ausgleich"))
         .andExpect(status().is(404));

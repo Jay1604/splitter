@@ -69,10 +69,10 @@ public class GruppenController {
   }
 
   @GetMapping("/gruppen/{id}")
-  public DetailedGruppeEntity gruppenDetailsById(@PathVariable("id") Long gruppenId) {
+  public DetailedGruppeEntity gruppenDetailsById(@PathVariable("id") String gruppenId) {
     Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
 
-    return new DetailedGruppeEntity(gruppenId.toString(), gruppe.getName(),
+    return new DetailedGruppeEntity(gruppenId, gruppe.getName(),
         gruppe.getMitglieder().stream().map(Person::getGitHubName).toList(), !gruppe.isOffen(),
         gruppe.getAusgaben().stream().map(
             a -> new AusgabeEntity(
@@ -85,15 +85,16 @@ public class GruppenController {
 
   @PostMapping("/gruppen/{id}/schliessen")
   public ResponseEntity<String> gruppeSchliessen(
-      @PathVariable("id") Long gruppenId
+      @PathVariable("id") String gruppenId
   ) {
-    gruppenService.schliesseGruppe(gruppenId);
+    Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
+    gruppenService.schliesseGruppe(gruppe.getId());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @PostMapping("/gruppen/{id}/auslagen")
   public ResponseEntity<String> addAusgabeToGruppe(
-      @PathVariable("id") Long gruppenId,
+      @PathVariable("id") String gruppenId,
       @RequestBody @Valid AusgabeEntity ausgabe,
       BindingResult bindingResult
   ) {
@@ -106,7 +107,7 @@ public class GruppenController {
     }
     try {
       gruppenService.addAusgabe(
-          gruppenId,
+          gruppe.getId(),
           ausgabe.grund(),
           Money.of(ausgabe.cent(), "EUR").divide(100),
           ausgabe.glaeubiger(),
@@ -120,7 +121,7 @@ public class GruppenController {
 
   @GetMapping("/gruppen/{id}/ausgleich")
   public List<UeberweisungEntity> getUeberweisungenForGruppe(
-      @PathVariable("id") Long gruppenId
+      @PathVariable("id") String gruppenId
   ) {
     Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
     AusgleichService ausgleichService = new AusgleichService();
