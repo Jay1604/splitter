@@ -29,6 +29,7 @@ public class GruppenController {
   @SuppressFBWarnings("EI_EXPOSE_REP2")
   public GruppenController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
+    this.gruppenService.addGruppe("ThiloSavaryHHU", "Gruppe 1");
   }
 
   @PostMapping("/gruppen")
@@ -66,13 +67,19 @@ public class GruppenController {
     return new DetailedGruppeEntity(gruppenId.toString(), gruppe.getName(),
         gruppe.getMitglieder().stream().map(Person::getGitHubName).toList(), !gruppe.isOffen(),
         gruppe.getAusgaben().stream().map(
-                a -> new AusgabeEntity(
-                    a.getBeschreibung(),
-                    a.getGlaeubiger().getGitHubName(),
-                    a.getBetrag().multiply(100L).getNumber().intValue(), //TODO:...
-                    a.getSchuldner().stream().map(Person::getGitHubName).toList()
-                )).toList());
+            a -> new AusgabeEntity(
+                a.getBeschreibung(),
+                a.getGlaeubiger().getGitHubName(),
+                a.getBetrag().multiply(100L).getNumber().intValue(), //TODO:...
+                a.getSchuldner().stream().map(Person::getGitHubName).toList()
+            )).toList());
   }
 
-
+  @PostMapping("/gruppen/{id}/schliessen")
+  public ResponseEntity<String> gruppeSchliessen(
+      @PathVariable("id") Long gruppenId
+  ) {
+    gruppenService.schliesseGruppe(gruppenId);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 }

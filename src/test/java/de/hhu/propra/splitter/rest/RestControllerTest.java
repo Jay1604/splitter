@@ -1,6 +1,7 @@
 package de.hhu.propra.splitter.rest;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -113,6 +114,25 @@ public class RestControllerTest {
     when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
 
     mvc.perform(get("/api/gruppen/0"))
+        .andExpect(status().is(404));
+
+  }
+
+  @Test
+  @DisplayName("Schliese Gruppe, wenn alles korrekt")
+  void test_7() throws Exception {
+    mvc.perform(post("/api/gruppen/0/schliessen"))
+        .andExpect(status().is(200));
+
+    verify(gruppenService).schliesseGruppe(0L);
+  }
+
+  @Test
+  @DisplayName("Schliese Gruppe gibt 404, wenn Gruppe nicht existiert")
+  void test_8() throws Exception {
+    doThrow(GruppeNotFoundException.class).when(gruppenService).schliesseGruppe(0);
+
+    mvc.perform(post("/api/gruppen/0/schliessen"))
         .andExpect(status().is(404));
 
   }
