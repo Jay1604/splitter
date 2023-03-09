@@ -2,14 +2,17 @@ package de.hhu.propra.splitter.web.rest.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
+import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.rest.objects.AusgabeEntity;
 import de.hhu.propra.splitter.web.rest.objects.DetailedGruppeEntity;
 import de.hhu.propra.splitter.web.rest.objects.SimpleGruppenEntity;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.validation.Valid;
+import org.javamoney.moneta.Money;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,6 +33,9 @@ public class GruppenController {
   public GruppenController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
     this.gruppenService.addGruppe("ThiloSavaryHHU", "Gruppe 1");
+    this.gruppenService.addPersonToGruppe("Mick", 0L);
+    this.gruppenService.addPersonToGruppe("Keith", 0L);
+    this.gruppenService.addPersonToGruppe("Ronnie", 0L);
   }
 
   @PostMapping("/gruppen")
@@ -81,5 +87,32 @@ public class GruppenController {
   ) {
     gruppenService.schliesseGruppe(gruppenId);
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @PostMapping("/gruppen/{id}/auslagen")
+  public ResponseEntity<String> addAusgabeToGruppe(
+      @PathVariable("id") Long gruppenId,
+      @RequestBody @Valid AusgabeEntity ausgabe,
+      BindingResult bindingResult
+  ) {
+    if (bindingResult.hasErrors()) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
+    if (!gruppe.isOffen()) {
+      return new ResponseEntity<>(HttpStatus.CONFLICT);
+    }
+    try {
+      gruppenService.addAusgabe(
+          gruppenId,
+          ausgabe.grund(),
+          Money.of(ausgabe.cent(), "EUR").divide(100),
+          ausgabe.glaeubiger(),
+          new HashSet<>(ausgabe.schuldner())
+      );
+    } catch (PersonNotFoundException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }

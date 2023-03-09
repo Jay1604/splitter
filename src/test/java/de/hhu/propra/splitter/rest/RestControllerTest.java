@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.hhu.propra.splitter.config.SecurityConfig;
+import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.factories.AusgabeFactory;
 import de.hhu.propra.splitter.factories.GruppeFactory;
@@ -135,5 +136,103 @@ public class RestControllerTest {
     mvc.perform(post("/api/gruppen/0/schliessen"))
         .andExpect(status().is(404));
 
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu, wenn alles korrekt")
+  void test_9() throws Exception {
+    Gruppe mockedResult = new GruppeFactory()
+        .withId(0L)
+        .withName("Tour 2023")
+        .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+        .build();
+
+    when(gruppenService.getGruppeById(0L)).thenReturn(mockedResult);
+
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
+                + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(201));
+
+    verify(gruppenService).addAusgabe(
+        0L,
+        "Black Paint",
+        Money.of(2599, "EUR").divide(100),
+        "Keith",
+        Set.of("Mick", "Keith", "Ronnie")
+    );
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 404, wenn Gruppe nicht existiert")
+  void test_10() throws Exception {
+    when(gruppenService.getGruppeById(0L)).thenThrow(GruppeNotFoundException.class);
+
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
+                + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(404));
+
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 409, wenn Gruppe geschlossen")
+  void test_11() throws Exception {
+    Gruppe mockedResult = new GruppeFactory()
+        .withId(0L)
+        .withName("Tour 2023")
+        .withIstOffen(false)
+        .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+        .build();
+
+    when(gruppenService.getGruppeById(0L)).thenReturn(mockedResult);
+
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
+                + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(409));
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Grund)")
+  void test_12() throws Exception {
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"glaeubiger\": \"Keith\","
+                + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(400));
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Glaeubiger)")
+  void test_13() throws Exception {
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\","
+                + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(400));
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Cent)")
+  void test_14() throws Exception {
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
+                + "\"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
+        .andExpect(status().is(400));
+  }
+
+  @Test
+  @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Schuldner)")
+  void test_15() throws Exception {
+    mvc.perform(post("/api/gruppen/0/auslagen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
+                + "\"cent\" : 2599}"))
+        .andExpect(status().is(400));
   }
 }

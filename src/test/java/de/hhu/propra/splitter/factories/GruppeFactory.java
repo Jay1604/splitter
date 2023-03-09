@@ -51,6 +51,7 @@ public class GruppeFactory {
       object.addAusgabe(debit.beschreibung(), debit.betrag(), debit.glauebiger(),
           debit.schuldner());
     }
+    object.setOffen(this.istOffen);
     return object;
   }
 }
