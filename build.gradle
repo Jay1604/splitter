@@ -34,10 +34,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
 
     // DB
-    // implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    // testRuntimeOnly 'com.h2database:h2'
-    // runtimeOnly 'org.postgresql:postgresql'
-    // implementation 'org.flywaydb:flyway-core'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    testRuntimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
 
     //
     implementation 'com.github.spotbugs:spotbugs-annotations:4.7.3'
