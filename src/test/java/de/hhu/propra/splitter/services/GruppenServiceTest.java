@@ -23,9 +23,11 @@ public class GruppenServiceTest {
   SpringDataGruppenRepository springGruppenRepository;
 
   GruppenRepository gruppenRepository;
+
   @BeforeEach
-  void init (){
-    gruppenRepository = new GruppenRepositoryImpl(springPersonenRepository,springGruppenRepository);
+  void init() {
+    gruppenRepository = new GruppenRepositoryImpl(springPersonenRepository,
+        springGruppenRepository);
   }
 
   @Test
@@ -79,9 +81,6 @@ public class GruppenServiceTest {
         Gruppe::getName
     ).containsExactlyInAnyOrder("gruppe1", "gruppe2");
   }
-
-
-
 
 
 }
