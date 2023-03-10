@@ -9,7 +9,6 @@ import org.javamoney.moneta.Money;
 
 public class Gruppe {
 
-
   private Long id;
   private Set<Person> mitglieder;
   private String name;

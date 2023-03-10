@@ -10,11 +10,31 @@ import org.springframework.data.annotation.PersistenceCreator;
 public class Gruppe {
 
   @Id
-  Integer id;
-  String name;
-  Boolean offen;
-  Set<Mitglied> mitglieder;
-  Set<Ausgabe> ausgaben;
+  private Integer id;
+  private String name;
+  private Boolean offen;
+  private Set<Mitglied> mitglieder;
+  private Set<Ausgabe> ausgaben;
+
+  public Integer getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Boolean getOffen() {
+    return offen;
+  }
+
+  public Set<Mitglied> getMitglieder() {
+    return Set.copyOf(mitglieder);
+  }
+
+  public Set<Ausgabe> getAusgaben() {
+    return Set.copyOf(ausgaben);
+  }
 
   @PersistenceCreator
   public Gruppe(Integer id, String name, Boolean offen, Set<Mitglied> mitglieder,
@@ -22,8 +42,12 @@ public class Gruppe {
     this.id = id;
     this.name = name;
     this.offen = offen;
-    this.mitglieder = mitglieder;
-    this.ausgaben = ausgaben;
+    this.mitglieder = new HashSet<>(mitglieder);
+    this.ausgaben = new HashSet<>(ausgaben);
+  }
+
+  public Gruppe(String name) {
+    this(null, name, true, Set.of(), Set.of());
   }
 
   @Override
@@ -35,5 +59,9 @@ public class Gruppe {
         + ", mitglieder=" + mitglieder
         + ", ausgaben=" + ausgaben
         + '}';
+  }
+
+  public void addMitglied(Person person) {
+    this.mitglieder.add(new Mitglied(person.id(), this.id));
   }
 }

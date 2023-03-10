@@ -8,14 +8,24 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TestRunner {
-
 //  @Bean
-//  CommandLineRunner test(SpringDataGruppenRepository gruppenRepository) {
+//  CommandLineRunner test(SpringDataGruppenRepository gruppenRepository, SpringDataPersonenRepository personenRepository, GruppenRepositoryImpl gruppenRepositoryimp) {
 //    return args -> {
 //      gruppenRepository.deleteAll();
-//      Gruppe test = gruppenRepository.save(new Gruppe(null, "test", true, Set.of(new Mitglied(1,)), Set.of()));
+//      personenRepository.deleteAll();
+//      Person person = personenRepository.save(new Person(null, "nutzer1"));
+//      Gruppe test = gruppenRepository.save(new Gruppe("test"));
+//      test.addMitglied(person);
 //      gruppenRepository.save(test);
 //      System.out.println(gruppenRepository.findAll());
+//
+//      de.hhu.propra.splitter.domain.models.Gruppe gruppe = gruppenRepositoryimp.toGruppe(test);
+//
+//      System.out.println(gruppe);
+//      gruppe.addMitglied("person");
+//      test = gruppenRepositoryimp.fromGruppe(gruppe);
+//      System.out.println(test);
+//
 //    };
-//  }
+//}
 }
