@@ -1,7 +1,7 @@
 create table gruppe
 (
     id     serial primary key,
-    "name" varchar(300),
+    gruppe_name varchar(300),
     offen  boolean
 );
 

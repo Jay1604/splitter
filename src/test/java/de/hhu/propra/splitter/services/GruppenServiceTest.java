@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.test.context.jdbc.Sql;
 
 @DataJdbcTest
 public class GruppenServiceTest {
@@ -29,6 +30,7 @@ public class GruppenServiceTest {
 
   @Test
   @DisplayName("Gruppen werden ausgegeben")
+  @Sql("clear__tables.sql")
   void test_1() {
     String personA = "personA";
     GruppenService gruppenService = new GruppenService(gruppenRepository);
@@ -43,6 +45,7 @@ public class GruppenServiceTest {
 
   @Test
   @DisplayName("Gruppen werden nicht ausgegeben, wenn nicht Mitglied")
+  @Sql("clear__tables.sql")
   void test_2() {
     String personA = "personA";
 
@@ -56,6 +59,7 @@ public class GruppenServiceTest {
 
   @Test
   @DisplayName("Nur eigene Gruppen werden ausgegeben. Und mehrere Personen sind in den Gruppen")
+  @Sql("clear__tables.sql")
   void test_3() {
     String personA = "personA";
     String personB = "personB";
@@ -75,6 +79,7 @@ public class GruppenServiceTest {
         Gruppe::getName
     ).containsExactlyInAnyOrder("gruppe1", "gruppe2");
   }
+
 
 
 

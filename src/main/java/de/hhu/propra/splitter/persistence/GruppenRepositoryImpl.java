@@ -76,4 +76,24 @@ public class GruppenRepositoryImpl implements GruppenRepository {
   }
 
 
+  @Override
+  public Set<de.hhu.propra.splitter.domain.models.Gruppe> getGruppen() {
+
+    return gruppenRepository.findAll().stream().map(this::toGruppe).collect(Collectors.toSet());
+
+  }
+
+  @Override
+  public Long addGruppe(de.hhu.propra.splitter.domain.models.Gruppe gruppe) {
+    Gruppe gruppeDto = gruppenRepository.save(new Gruppe(gruppe.getName()));
+    gruppe.setId(gruppeDto.getId().longValue());
+
+    return gruppenRepository.save(fromGruppe(gruppe)).getId().longValue();
+  }
+
+  @Override
+  public void saveGruppe(de.hhu.propra.splitter.domain.models.Gruppe gruppe) {
+    gruppenRepository.save(fromGruppe(gruppe));
+  }
+
 }

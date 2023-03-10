@@ -34,10 +34,6 @@ public class GruppenController {
   @SuppressFBWarnings("EI_EXPOSE_REP2")
   public GruppenController(final GruppenService gruppenService) {
     this.gruppenService = gruppenService;
-    this.gruppenService.addGruppe("ThiloSavaryHHU", "Gruppe 1");
-    this.gruppenService.addPersonToGruppe("Mick", 0L);
-    this.gruppenService.addPersonToGruppe("Keith", 0L);
-    this.gruppenService.addPersonToGruppe("Ronnie", 0L);
   }
 
   @PostMapping("/gruppen")

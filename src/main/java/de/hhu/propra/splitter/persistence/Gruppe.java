@@ -5,13 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.relational.core.mapping.Column;
 
 @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Gruppe {
 
   @Id
   private Integer id;
-  private String name;
+  private String gruppeName;
   private Boolean offen;
   private Set<Mitglied> mitglieder;
   private Set<Ausgabe> ausgaben;
@@ -21,7 +22,7 @@ public class Gruppe {
   }
 
   public String getName() {
-    return name;
+    return gruppeName;
   }
 
   public Boolean getOffen() {
@@ -37,24 +38,24 @@ public class Gruppe {
   }
 
   @PersistenceCreator
-  public Gruppe(Integer id, String name, Boolean offen, Set<Mitglied> mitglieder,
+  public Gruppe(Integer id, String gruppeName, Boolean offen, Set<Mitglied> mitglieder,
       Set<Ausgabe> ausgaben) {
     this.id = id;
-    this.name = name;
+    this.gruppeName = gruppeName;
     this.offen = offen;
     this.mitglieder = new HashSet<>(mitglieder);
     this.ausgaben = new HashSet<>(ausgaben);
   }
 
-  public Gruppe(String name) {
-    this(null, name, true, Set.of(), Set.of());
+  public Gruppe(String gruppeName) {
+    this(null, gruppeName, true, Set.of(), Set.of());
   }
 
   @Override
   public String toString() {
     return "Gruppe{"
         + "id=" + id
-        + ", name='" + name + '\''
+        + ", gruppeName='" + gruppeName + '\''
         + ", offen=" + offen
         + ", mitglieder=" + mitglieder
         + ", ausgaben=" + ausgaben

@@ -3,6 +3,7 @@ package de.hhu.propra.splitter.services;
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,20 +16,18 @@ public class GruppenService {
 
   private final GruppenRepository gruppenRepository;
 
-  public GruppenService(GruppenRepository gruppenRepository) {
+  @SuppressFBWarnings("EI_EXPOSE_REP2")
+  public GruppenService(final GruppenRepository gruppenRepository) {
     this.gruppenRepository = gruppenRepository;
   }
 
-  private Set<Gruppe> gruppen = new HashSet<>();
-
   private Set<Gruppe> getGruppen() {
-    return Set.copyOf(gruppen);
+    return gruppenRepository.getGruppen();
   }
 
   public Long addGruppe(String gruender, String name) {
-    Gruppe gruppe = new Gruppe((long) gruppen.size(), gruender, name);
-    gruppen.add(gruppe);
-    return gruppe.getId();
+    Gruppe gruppe = new Gruppe(null, gruender, name);
+    return gruppenRepository.addGruppe(gruppe);
   }
 
   public Set<Gruppe> getGruppenForGithubName(String githubName) {
@@ -43,13 +42,14 @@ public class GruppenService {
 
   public void addPersonToGruppe(String githubName, long gruppenId) {
 
-    Gruppe gruppe = gruppen
+    Gruppe gruppe = this.getGruppen()
         .stream()
         .filter(a -> a.getId().equals(gruppenId))
         .findFirst()
         .orElseThrow(GruppeNotFoundException::new);
 
     gruppe.addMitglied(githubName);
+    gruppenRepository.saveGruppe(gruppe);
   }
 
   public Gruppe getGruppeForGithubNameById(String githubName, long id) {
@@ -63,7 +63,10 @@ public class GruppenService {
   }
 
   public void schliesseGruppe(long gruppenId) {
-    getGruppeById(gruppenId).setOffen(false);
+
+    Gruppe gruppeById = getGruppeById(gruppenId);
+    gruppeById.setOffen(false);
+    gruppenRepository.saveGruppe(gruppeById);
   }
 
   public Gruppe getGruppeById(long gruppenId) {
@@ -86,6 +89,7 @@ public class GruppenService {
       Set<String> schuldner) {
     Gruppe gruppe = getGruppeById(gruppenId);
     gruppe.addAusgabe(beschreibung, betrag, glaubiger, schuldner);
+    gruppenRepository.saveGruppe(gruppe);
 
   }
 }
