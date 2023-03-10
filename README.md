@@ -13,8 +13,11 @@ Eine minimalistische Anwendung zur Verwaltung von Ausgaben in Gruppen.
 
 ### Umgebungsvariablen
 
-| Name          | Beschreibung                                          |
-|---------------|-------------------------------------------------------|
-| CLIENT_ID     | Client ID zur Authentifizierung mit GitHub OAuth2     |
-| CLIENT_SECRET | Client Secret zur Authentifizierung mit GitHub OAuth2 |
+| Name              | Beschreibung                                          |
+|-------------------|-------------------------------------------------------|
+| CLIENT_ID         | Client ID zur Authentifizierung mit GitHub OAuth2     |
+| CLIENT_SECRET     | Client Secret zur Authentifizierung mit GitHub OAuth2 |
+| DATABASE_DB       | Name der Datenbank (kann beliebig gewählt werden)     |
+| DATABASE_PASSWORD | Passwort der Datenbank                                |
+| DATABASE_USERNAME | Nutzername der Datenbank                              |
 
