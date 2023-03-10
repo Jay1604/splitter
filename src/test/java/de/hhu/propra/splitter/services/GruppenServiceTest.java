@@ -3,17 +3,35 @@ package de.hhu.propra.splitter.services;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.persistence.GruppenRepositoryImpl;
+import de.hhu.propra.splitter.persistence.SpringDataGruppenRepository;
+import de.hhu.propra.splitter.persistence.SpringDataPersonenRepository;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 
+@DataJdbcTest
 public class GruppenServiceTest {
+
+  @Autowired
+  SpringDataPersonenRepository springPersonenRepository;
+  @Autowired
+  SpringDataGruppenRepository springGruppenRepository;
+
+  GruppenRepository gruppenRepository;
+  @BeforeEach
+  void init (){
+    gruppenRepository = new GruppenRepositoryImpl(springPersonenRepository,springGruppenRepository);
+  }
 
   @Test
   @DisplayName("Gruppen werden ausgegeben")
   void test_1() {
     String personA = "personA";
-    GruppenService gruppenService = new GruppenService();
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
 
     gruppenService.addGruppe(personA, "gruppe1");
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
@@ -28,7 +46,7 @@ public class GruppenServiceTest {
   void test_2() {
     String personA = "personA";
 
-    GruppenService gruppenService = new GruppenService();
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
 
     gruppenService.addGruppe(personA, "gruppe1");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
@@ -42,7 +60,7 @@ public class GruppenServiceTest {
     String personA = "personA";
     String personB = "personB";
 
-    GruppenService gruppenService = new GruppenService();
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
 
     Long gruppe1Id = gruppenService.addGruppe(personA, "gruppe1");
     gruppenService.addGruppe(personB, "gruppe2");
@@ -57,6 +75,8 @@ public class GruppenServiceTest {
         Gruppe::getName
     ).containsExactlyInAnyOrder("gruppe1", "gruppe2");
   }
+
+
 
 
 }

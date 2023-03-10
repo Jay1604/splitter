@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class GruppenService {
 
+
+  private final GruppenRepository gruppenRepository;
+
+  public GruppenService(GruppenRepository gruppenRepository) {
+    this.gruppenRepository = gruppenRepository;
+  }
+
   private Set<Gruppe> gruppen = new HashSet<>();
 
   private Set<Gruppe> getGruppen() {
