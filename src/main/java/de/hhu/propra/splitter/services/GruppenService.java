@@ -4,7 +4,6 @@ import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.domain.models.Person;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.javamoney.moneta.Money;
@@ -25,26 +24,44 @@ public class GruppenService {
     return gruppenRepository.getGruppen();
   }
 
-  public Long addGruppe(String gruender, String name) {
-    Gruppe gruppe = new Gruppe(null, gruender, name);
+  public Long addGruppe(
+      String gruender,
+      String name
+  ) {
+    Gruppe gruppe = new Gruppe(
+        null,
+        gruender,
+        name
+    );
     return gruppenRepository.addGruppe(gruppe);
   }
 
   public Set<Gruppe> getGruppenForGithubName(String githubName) {
-    return this.getGruppen().stream().filter(
-        gruppe -> gruppe.getMitglieder()
-            .stream()
-            .map(Person::getGitHubName)
-            .toList()
-            .contains(githubName)
-    ).collect(Collectors.toSet());
+    return this
+        .getGruppen()
+        .stream()
+        .filter(
+            gruppe -> gruppe
+                .getMitglieder()
+                .stream()
+                .map(Person::getGitHubName)
+                .toList()
+                .contains(githubName)
+        )
+        .collect(Collectors.toSet());
   }
 
-  public void addPersonToGruppe(String githubName, long gruppenId) {
+  public void addPersonToGruppe(
+      String githubName,
+      long gruppenId
+  ) {
 
-    Gruppe gruppe = this.getGruppen()
+    Gruppe gruppe = this
+        .getGruppen()
         .stream()
-        .filter(a -> a.getId().equals(gruppenId))
+        .filter(a -> a
+            .getId()
+            .equals(gruppenId))
         .findFirst()
         .orElseThrow(GruppeNotFoundException::new);
 
@@ -52,14 +69,25 @@ public class GruppenService {
     gruppenRepository.saveGruppe(gruppe);
   }
 
-  public Gruppe getGruppeForGithubNameById(String githubName, long id) {
-    return this.getGruppen().stream().filter(
-        gruppe -> gruppe.getMitglieder()
-            .stream()
-            .map(Person::getGitHubName)
-            .toList()
-            .contains(githubName) && gruppe.getId().equals(id)
-    ).findFirst().orElseThrow(GruppeNotFoundException::new);
+  public Gruppe getGruppeForGithubNameById(
+      String githubName,
+      long id
+  ) {
+    return this
+        .getGruppen()
+        .stream()
+        .filter(
+            gruppe -> gruppe
+                .getMitglieder()
+                .stream()
+                .map(Person::getGitHubName)
+                .toList()
+                .contains(githubName) && gruppe
+                .getId()
+                .equals(id)
+        )
+        .findFirst()
+        .orElseThrow(GruppeNotFoundException::new);
   }
 
   public void schliesseGruppe(long gruppenId) {
@@ -70,9 +98,16 @@ public class GruppenService {
   }
 
   public Gruppe getGruppeById(long gruppenId) {
-    return this.getGruppen().stream().filter(
-        gruppe -> gruppe.getId().equals(gruppenId)
-    ).findFirst().orElseThrow(GruppeNotFoundException::new);
+    return this
+        .getGruppen()
+        .stream()
+        .filter(
+            gruppe -> gruppe
+                .getId()
+                .equals(gruppenId)
+        )
+        .findFirst()
+        .orElseThrow(GruppeNotFoundException::new);
   }
 
   public Gruppe getGruppeById(String gruppenId) {
@@ -85,10 +120,20 @@ public class GruppenService {
     return this.getGruppeById(id);
   }
 
-  public void addAusgabe(Long gruppenId, String beschreibung, Money betrag, String glaubiger,
-      Set<String> schuldner) {
+  public void addAusgabe(
+      Long gruppenId,
+      String beschreibung,
+      Money betrag,
+      String glaubiger,
+      Set<String> schuldner
+  ) {
     Gruppe gruppe = getGruppeById(gruppenId);
-    gruppe.addAusgabe(beschreibung, betrag, glaubiger, schuldner);
+    gruppe.addAusgabe(
+        beschreibung,
+        betrag,
+        glaubiger,
+        schuldner
+    );
     gruppenRepository.saveGruppe(gruppe);
 
   }

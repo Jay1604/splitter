@@ -25,19 +25,39 @@ public class UeberweisungListController {
   }
 
   @GetMapping("/meineUebersicht")
-  public String ueberweisungListForPersonView(Model model, OAuth2AuthenticationToken token) {
+  public String ueberweisungListForPersonView(
+      Model model,
+      OAuth2AuthenticationToken token
+  ) {
     AusgleichService ausgleichService = new AusgleichService();
     Set<UeberweisungWebobject> ueberweisungen = gruppenService
         .getGruppenForGithubName(token
             .getPrincipal()
             .getAttribute("login")
-        ).stream()
+        )
+        .stream()
         .flatMap(
-            a -> ausgleichService.berechneAusgleichUeberweisungen(a).stream().map(
-                b -> new UeberweisungWebobject(b.getEmpfaenger().getGitHubName(),
-                    b.getBetrag().toString(),
-                    b.getSender().getGitHubName(), a.getName()))).collect(Collectors.toSet());
-    model.addAttribute("ueberweisungen", ueberweisungen);
+            a -> ausgleichService
+                .berechneAusgleichUeberweisungen(a)
+                .stream()
+                .map(
+                    b -> new UeberweisungWebobject(
+                        b
+                            .getEmpfaenger()
+                            .getGitHubName(),
+                        b
+                            .getBetrag()
+                            .toString(),
+                        b
+                            .getSender()
+                            .getGitHubName(),
+                        a.getName()
+                    )))
+        .collect(Collectors.toSet());
+    model.addAttribute(
+        "ueberweisungen",
+        ueberweisungen
+    );
     return "ueberweisungList";
   }
 }

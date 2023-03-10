@@ -29,27 +29,45 @@ public class GruppeSchliessenController {
   }
 
   @GetMapping("gruppe/schliessen")
-  public String gruppeSchliessenView(Model m, OAuth2AuthenticationToken token,
-      @RequestParam(value = "nr") long gruppeId) {
+  public String gruppeSchliessenView(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId
+  ) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), gruppeId);
+        token
+            .getPrincipal()
+            .getAttribute("login"),
+        gruppeId
+    );
     if (gruppe.isOffen()) {
-      m.addAttribute("id", gruppeId);
+      m.addAttribute(
+          "id",
+          gruppeId
+      );
       return "gruppeSchliessen";
     }
     return "redirect:/gruppe?nr=" + gruppeId;
   }
 
   @PostMapping("gruppe/schliessen")
-  public String gruppeSchliessen(Model m, OAuth2AuthenticationToken token,
-      @Valid GruppenSchliessenForm form, BindingResult bindingResult,
-      HttpServletResponse response) {
+  public String gruppeSchliessen(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @Valid GruppenSchliessenForm form,
+      BindingResult bindingResult,
+      HttpServletResponse response
+  ) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "gruppeSchliessen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), form.id());
+        token
+            .getPrincipal()
+            .getAttribute("login"),
+        form.id()
+    );
     if (!gruppe.isOffen()) {
       throw new GruppeNotFoundException();
     }

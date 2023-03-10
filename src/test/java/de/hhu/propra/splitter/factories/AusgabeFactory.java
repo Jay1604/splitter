@@ -9,10 +9,16 @@ import org.javamoney.moneta.Money;
 public class AusgabeFactory {
 
   private String beschreibung = "Some description";
-  private Money betrag = Money.of(0, "EUR");
+  private Money betrag = Money.of(
+      0,
+      "EUR"
+  );
   private String glaeubiger = "nutzer1";
   private Set<String> schuldner = new HashSet<>(
-      Set.of("nutzer1", "nutzer2"));
+      Set.of(
+          "nutzer1",
+          "nutzer2"
+      ));
 
   public AusgabeFactory withBeschreibung(String beschreibung) {
     this.beschreibung = beschreibung;

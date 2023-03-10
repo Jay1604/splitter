@@ -11,7 +11,12 @@ public class Ausgabe {
   private Person glaeubiger;
   private Set<Person> schuldner = new HashSet<>();
 
-  Ausgabe(String beschreibung, Money betrag, Person glaeubiger, Set<Person> schuldner) {
+  Ausgabe(
+      String beschreibung,
+      Money betrag,
+      Person glaeubiger,
+      Set<Person> schuldner
+  ) {
     this.beschreibung = beschreibung;
     this.betrag = Money.from(betrag);
     this.glaeubiger = glaeubiger;

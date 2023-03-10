@@ -31,14 +31,22 @@ public class GruppeErstellenController {
   }
 
   @PostMapping("/gruppe/erstellen")
-  public String gruppeErstellen(@Valid GruppeErstellenForm gruppeErstellenForm,
-      BindingResult bindingResult, OAuth2AuthenticationToken token, HttpServletResponse response) {
+  public String gruppeErstellen(
+      @Valid GruppeErstellenForm gruppeErstellenForm,
+      BindingResult bindingResult,
+      OAuth2AuthenticationToken token,
+      HttpServletResponse response
+  ) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "gruppeErstellen";
     }
-    gruppenService.addGruppe(token.getPrincipal().getAttribute("login"),
-        HtmlUtils.htmlEscape(gruppeErstellenForm.name()));
+    gruppenService.addGruppe(
+        token
+            .getPrincipal()
+            .getAttribute("login"),
+        HtmlUtils.htmlEscape(gruppeErstellenForm.name())
+    );
 
     return "redirect:/";
   }

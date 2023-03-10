@@ -29,22 +29,47 @@ public class GruppeTest {
     String personB = "nutzer2";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB))
+        .withMitglieder(Set.of(
+            personA,
+            personB
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(40, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    40,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(20, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            )
+        );
   }
 
   @Test
@@ -65,31 +90,85 @@ public class GruppeTest {
     String personD = "nutzer4";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB, personC, personD))
+        .withMitglieder(Set.of(
+            personA,
+            personB,
+            personC,
+            personD
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(40, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-                personD, personC
-            )).withBetrag(Money.of(40, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    40,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personC)
+                .withSchuldner(Set.of(
+                    personD,
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    40,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsOnly(
-        tuple(personB, Money.of(20, "EUR")),
-        tuple(personD, Money.of(20, "EUR"))
-    );
-    assertThat(ausgleich).extracting(
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personA, Money.of(20, "EUR")),
-        tuple(personC, Money.of(20, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsOnly(
+            tuple(
+                personB,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personD,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            )
+        );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personA,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personC,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            )
+        );
 
   }
 
@@ -101,23 +180,57 @@ public class GruppeTest {
     String personC = "nutzer3";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB, personC))
+        .withMitglieder(Set.of(
+            personA,
+            personB,
+            personC
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personC, personA
-            )).withBetrag(Money.of(30, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personC,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    30,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(10, "EUR")),
-        tuple(personC, personA, Money.of(10, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    10,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personC,
+                personA,
+                Money.of(
+                    10,
+                    "EUR"
+                )
+            )
+        );
   }
 
   @Test
@@ -128,26 +241,68 @@ public class GruppeTest {
     String personC = "nutzer3";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB, personC))
+        .withMitglieder(Set.of(
+            personA,
+            personB,
+            personC
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personC, personA
-            )).withBetrag(Money.of(30, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personC, personB
-            )).withBetrag(Money.of(100, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personC,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    30,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personC,
+                    personB
+                ))
+                .withBetrag(Money.of(
+                    100,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personC, personA, Money.of(20, "EUR")),
-        tuple(personC, personB, Money.of(40, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personC,
+                personA,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personC,
+                personB,
+                Money.of(
+                    40,
+                    "EUR"
+                )
+            )
+        );
   }
 
 
@@ -158,25 +313,58 @@ public class GruppeTest {
     String personB = "nutzer2";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB))
+        .withMitglieder(Set.of(
+            personA,
+            personB
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(20, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    20,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(15, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    15,
+                    "EUR"
+                )
+            )
+        );
 
   }
 
@@ -187,25 +375,58 @@ public class GruppeTest {
     String personB = "nutzer2";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB))
+        .withMitglieder(Set.of(
+            personA,
+            personB
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(20, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    20,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personA, personB, Money.of(5, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personA,
+                personB,
+                Money.of(
+                    5,
+                    "EUR"
+                )
+            )
+        );
 
   }
 
@@ -216,25 +437,57 @@ public class GruppeTest {
     String personB = "nutzer2";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB))
+        .withMitglieder(Set.of(
+            personA,
+            personB
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(20, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    20,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(20, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            )
+        );
 
   }
 
@@ -246,18 +499,47 @@ public class GruppeTest {
     String personC = "nutzer3";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB, personC))
+        .withMitglieder(Set.of(
+            personA,
+            personB,
+            personC
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personC, personB
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-                personA, personC
-            )).withBetrag(Money.of(10, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personC,
+                    personB
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personC)
+                .withSchuldner(Set.of(
+                    personA,
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
@@ -272,29 +554,80 @@ public class GruppeTest {
     String personC = "nutzer3";
 
     Gruppe gruppe = new GruppeFactory()
-        .withMitglieder(Set.of(personA, personB, personC))
+        .withMitglieder(Set.of(
+            personA,
+            personB,
+            personC
+        ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personA, personC
-            )).withBetrag(Money.of(60, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personC, personB, personA
-            )).withBetrag(Money.of(30, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-                personB, personC
-            )).withBetrag(Money.of(100, "EUR")).build()
-        )).build();
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personA,
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    60,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personC,
+                    personB,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    30,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personC)
+                .withSchuldner(Set.of(
+                    personB,
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    100,
+                    "EUR"
+                ))
+                .build()
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(30, "EUR")),
-        tuple(personB, personC, Money.of(20, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    30,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personB,
+                personC,
+                Money.of(
+                    20,
+                    "EUR"
+                )
+            )
+        );
   }
 
   @Test
@@ -309,42 +642,154 @@ public class GruppeTest {
 
     Gruppe gruppe = new GruppeFactory()
         .withMitglieder(
-            Set.of(personA, personB, personC, personD, personE, personF))
+            Set.of(
+                personA,
+                personB,
+                personC,
+                personD,
+                personE,
+                personF
+            ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personA).withSchuldner(Set.of(
-                personB, personC, personD, personE, personF, personA
-            )).withBetrag(Money.of(564, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personA, personB
-            )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-            new AusgabeFactory().withGlaeubiger(personB).withSchuldner(Set.of(
-                personA, personD, personB
-            )).withBetrag(Money.of(77.16, "EUR").divide(2)).build(),
-            new AusgabeFactory().withGlaeubiger(personC).withSchuldner(Set.of(
-                personE, personF, personC
-            )).withBetrag(Money.of(82.11, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
-                personB, personC, personA, personE, personF, personD
-            )).withBetrag(Money.of(96, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-                personB, personE, personF
-            )).withBetrag(Money.of(95.37, "EUR")).build()
+            new AusgabeFactory()
+                .withGlaeubiger(personA)
+                .withSchuldner(Set.of(
+                    personB,
+                    personC,
+                    personD,
+                    personE,
+                    personF,
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    564,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personA,
+                    personB
+                ))
+                .withBetrag(Money
+                    .of(
+                        77.16,
+                        "EUR"
+                    )
+                    .divide(2))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personB)
+                .withSchuldner(Set.of(
+                    personA,
+                    personD,
+                    personB
+                ))
+                .withBetrag(Money
+                    .of(
+                        77.16,
+                        "EUR"
+                    )
+                    .divide(2))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personC)
+                .withSchuldner(Set.of(
+                    personE,
+                    personF,
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    82.11,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personD)
+                .withSchuldner(Set.of(
+                    personB,
+                    personC,
+                    personA,
+                    personE,
+                    personF,
+                    personD
+                ))
+                .withBetrag(Money.of(
+                    96,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personF)
+                .withSchuldner(Set.of(
+                    personB,
+                    personE,
+                    personF
+                ))
+                .withBetrag(Money.of(
+                    95.37,
+                    "EUR"
+                ))
+                .build()
 
-        )).build();
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personB, personA, Money.of(96.78, "EUR")),
-        tuple(personC, personA, Money.of(55.26, "EUR")),
-        tuple(personD, personA, Money.of(26.86, "EUR")),
-        tuple(personE, personA, Money.of(169.16, "EUR")),
-        tuple(personF, personA, Money.of(73.79, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personB,
+                personA,
+                Money.of(
+                    96.78,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personC,
+                personA,
+                Money.of(
+                    55.26,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personD,
+                personA,
+                Money.of(
+                    26.86,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personE,
+                personA,
+                Money.of(
+                    169.16,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personF,
+                personA,
+                Money.of(
+                    73.79,
+                    "EUR"
+                )
+            )
+        );
   }
 
   @Test
@@ -358,49 +803,161 @@ public class GruppeTest {
     String personF = "nutzer6";
     String personG = "nutzer7";
 
-    Gruppe gruppe = new GruppeFactory().withMitglieder(
-            Set.of(personA, personB, personC, personD, personE, personF, personG))
+    Gruppe gruppe = new GruppeFactory()
+        .withMitglieder(
+            Set.of(
+                personA,
+                personB,
+                personC,
+                personD,
+                personE,
+                personF,
+                personG
+            ))
         .withAusgaben(Set.of(
-            new AusgabeFactory().withGlaeubiger(personD).withSchuldner(Set.of(
-                personD, personF
-            )).withBetrag(Money.of(20, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
-                personB
-            )).withBetrag(Money.of(10, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
-                personA, personC, personE
-            )).withBetrag(Money.of(75, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-                personA, personF
-            )).withBetrag(Money.of(50, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personE).withSchuldner(Set.of(
-                personD
-            )).withBetrag(Money.of(40, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-                personB, personF
-            )).withBetrag(Money.of(40, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personF).withSchuldner(Set.of(
-                personC
-            )).withBetrag(Money.of(5, "EUR")).build(),
-            new AusgabeFactory().withGlaeubiger(personG).withSchuldner(Set.of(
-                personA
-            )).withBetrag(Money.of(30, "EUR")).build()
+            new AusgabeFactory()
+                .withGlaeubiger(personD)
+                .withSchuldner(Set.of(
+                    personD,
+                    personF
+                ))
+                .withBetrag(Money.of(
+                    20,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personG)
+                .withSchuldner(Set.of(
+                    personB
+                ))
+                .withBetrag(Money.of(
+                    10,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personE)
+                .withSchuldner(Set.of(
+                    personA,
+                    personC,
+                    personE
+                ))
+                .withBetrag(Money.of(
+                    75,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personF)
+                .withSchuldner(Set.of(
+                    personA,
+                    personF
+                ))
+                .withBetrag(Money.of(
+                    50,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personE)
+                .withSchuldner(Set.of(
+                    personD
+                ))
+                .withBetrag(Money.of(
+                    40,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personF)
+                .withSchuldner(Set.of(
+                    personB,
+                    personF
+                ))
+                .withBetrag(Money.of(
+                    40,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personF)
+                .withSchuldner(Set.of(
+                    personC
+                ))
+                .withBetrag(Money.of(
+                    5,
+                    "EUR"
+                ))
+                .build(),
+            new AusgabeFactory()
+                .withGlaeubiger(personG)
+                .withSchuldner(Set.of(
+                    personA
+                ))
+                .withBetrag(Money.of(
+                    30,
+                    "EUR"
+                ))
+                .build()
 
-        )).build();
+        ))
+        .build();
 
     Set<Ueberweisung> ausgleich = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
 
-    assertThat(ausgleich).extracting(
-        (a -> a.getSender().getGitHubName()),
-        (a -> a.getEmpfaenger().getGitHubName()),
-        Ueberweisung::getBetrag
-    ).containsExactlyInAnyOrder(
-        tuple(personA, personF, Money.of(40, "EUR")),
-        tuple(personA, personG, Money.of(40, "EUR")),
-        tuple(personB, personE, Money.of(30, "EUR")),
-        tuple(personC, personE, Money.of(30, "EUR")),
-        tuple(personD, personE, Money.of(30, "EUR"))
-    );
+    assertThat(ausgleich)
+        .extracting(
+            (a -> a
+                .getSender()
+                .getGitHubName()),
+            (a -> a
+                .getEmpfaenger()
+                .getGitHubName()),
+            Ueberweisung::getBetrag
+        )
+        .containsExactlyInAnyOrder(
+            tuple(
+                personA,
+                personF,
+                Money.of(
+                    40,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personA,
+                personG,
+                Money.of(
+                    40,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personB,
+                personE,
+                Money.of(
+                    30,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personC,
+                personE,
+                Money.of(
+                    30,
+                    "EUR"
+                )
+            ),
+            tuple(
+                personD,
+                personE,
+                Money.of(
+                    30,
+                    "EUR"
+                )
+            )
+        );
   }
 
 

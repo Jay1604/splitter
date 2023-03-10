@@ -10,7 +10,12 @@
 <body>
 <div class="container">
   <header class="row">
-    <div class="col" > <a href="/" class="text-decoration-none"><img src="../static/img/logo.png "alt="aplication Logo" height="64" width="64" th:src="@{/img/logo.png}"></a> </div>
+    <div class="col">
+      <a href="/" class="text-decoration-none">
+        <img src="../static/img/logo.png " alt="Splitter Logo" height="64" width="64"
+             th:src="@{/img/logo.png}">
+      </a>
+    </div>
     <h1 th:text="${gruppe.name}">Urlaub</h1>
   </header>
   <main class="row">
@@ -18,7 +23,8 @@
       <div class="btn-group" th:if="${gruppe.isOffen()}">
         <a th:href="@{gruppe/schliessen(nr=${gruppe.id})}" class="btn btn-outline-primary">Gruppe
           schließen</a>
-        <a th:href="@{gruppe/personHinzufuegen(nr=${gruppe.id})}" th:if="${gruppe.getAusgaben().size()==0}" class="btn btn-outline-primary">Nutzer
+        <a th:href="@{gruppe/personHinzufuegen(nr=${gruppe.id})}"
+           th:if="${gruppe.getAusgaben().size()==0}" class="btn btn-outline-primary">Nutzer
           hinzufügen</a>
         <a th:href="@{gruppe/ausgabeHinzufuegen(nr=${gruppe.id})}" class="btn btn-outline-primary">Neue
           Transaktion</a>

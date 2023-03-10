@@ -29,23 +29,68 @@ public class GruppeDetailsController {
   }
 
   @GetMapping("/gruppe")
-  public String gruppeDetailsView(Model m, OAuth2AuthenticationToken token,
-      @RequestParam(value = "nr") long gruppeId) {
-    String username = token.getPrincipal().getAttribute("login");
+  public String gruppeDetailsView(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId
+  ) {
+    String username = token
+        .getPrincipal()
+        .getAttribute("login");
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        username, gruppeId);
-    Set<AusgabeWebobject> ausgaben = gruppe.getAusgaben().stream().map(
-            e -> new AusgabeWebobject(e.getBeschreibung(), e.getBetrag().toString(),
-                e.getGlaeubiger().getGitHubName(),
-                String.join(", ", e.getSchuldner().stream().map(Person::getGitHubName).toList()),
-                (username.equals(e.getGlaeubiger().getGitHubName()) || e.getSchuldner().stream()
-                    .map(Person::getGitHubName).toList().contains(username))))
+        username,
+        gruppeId
+    );
+    Set<AusgabeWebobject> ausgaben = gruppe
+        .getAusgaben()
+        .stream()
+        .map(
+            e -> {
+              return new AusgabeWebobject(
+                  e.getBeschreibung(),
+                  e
+                      .getBetrag()
+                      .toString(),
+                  e
+                      .getGlaeubiger()
+                      .getGitHubName(),
+                  String.join(
+                      ", ",
+                      e
+                          .getSchuldner()
+                          .stream()
+                          .map(Person::getGitHubName)
+                          .toList()
+                  ),
+                  (
+                      e
+                          .getGlaeubiger()
+                          .getGitHubName()
+                          .equals(username)
+                          || e
+                          .getSchuldner()
+                          .stream()
+                          .map(Person::getGitHubName)
+                          .toList()
+                          .contains(username)
+                  )
+              );
+            })
         .collect(Collectors.toSet());
-    m.addAttribute("gruppe", gruppe);
-    m.addAttribute("ausgaben", ausgaben);
+    m.addAttribute(
+        "gruppe",
+        gruppe
+    );
+    m.addAttribute(
+        "ausgaben",
+        ausgaben
+    );
     AusgleichService ausgleichService = new AusgleichService();
     Set<Ueberweisung> ueberweisungen = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
-    m.addAttribute("ueberweisungen", ueberweisungen);
+    m.addAttribute(
+        "ueberweisungen",
+        ueberweisungen
+    );
     return "gruppeDetails";
   }
 

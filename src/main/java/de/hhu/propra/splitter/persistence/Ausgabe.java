@@ -10,7 +10,6 @@ public record Ausgabe(
     String beschreibung,
     Long betrag,
     Integer glaeubiger,
-
     Set<Schuldner> schuldner
 ) {
 

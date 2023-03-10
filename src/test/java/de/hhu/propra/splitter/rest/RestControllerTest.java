@@ -41,22 +41,40 @@ public class RestControllerTest {
   @DisplayName("Gruppe erstellen mit JSON")
   void test_1(
   ) throws Exception {
-    when(gruppenService.addGruppe(anyString(), anyString())).thenReturn(0L);
+    when(gruppenService.addGruppe(
+        anyString(),
+        anyString()
+    )).thenReturn(0L);
 
-    mvc.perform(post("/api/gruppen").contentType(MediaType.APPLICATION_JSON).content(
-            "{\"name\" : \"Tour 2023\", \"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"] }"))
+    mvc
+        .perform(post("/api/gruppen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                "{\"name\" : \"Tour 2023\", \"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"] }"))
         .andExpect(status().is(201));
-    verify(gruppenService).addGruppe("Mick", "Tour 2023");
-    verify(gruppenService).addPersonToGruppe("Keith", 0L);
-    verify(gruppenService).addPersonToGruppe("Ronnie", 0L);
+    verify(gruppenService).addGruppe(
+        "Mick",
+        "Tour 2023"
+    );
+    verify(gruppenService).addPersonToGruppe(
+        "Keith",
+        0L
+    );
+    verify(gruppenService).addPersonToGruppe(
+        "Ronnie",
+        0L
+    );
 
   }
 
   @Test
   @DisplayName("Wenn Gruppe-Request unvollständig, dann 400")
   void test_2() throws Exception {
-    mvc.perform(post("/api/gruppen").contentType(MediaType.APPLICATION_JSON).content(
-            "{\"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"] }"))
+    mvc
+        .perform(post("/api/gruppen")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                "{\"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"] }"))
         .andExpect(status().is(400));
   }
 
@@ -65,18 +83,26 @@ public class RestControllerTest {
   void test_3(
   ) throws Exception {
     when(gruppenService.getGruppenForGithubName("nutzer1")).thenReturn(Set.of(
-        new GruppeFactory().withId(0L).withName("test").withMitglieder(Set.of("nutzer1")).build()));
+        new GruppeFactory()
+            .withId(0L)
+            .withName("test")
+            .withMitglieder(Set.of("nutzer1"))
+            .build()));
 
-    mvc.perform(get("/api/user/nutzer1/gruppen"))
-        .andExpect(status().is(200)).andExpect(
+    mvc
+        .perform(get("/api/user/nutzer1/gruppen"))
+        .andExpect(status().is(200))
+        .andExpect(
             content().json("[{\"gruppe\":\"0\",\"name\":\"test\",\"personen\":[\"nutzer1\"]}]"));
   }
 
   @Test
   @DisplayName("Wenn keine Gruppen oder die Person unbekannt, dann leeres Array")
   void test_4() throws Exception {
-    mvc.perform(get("/api/user/nutzer1/gruppen"))
-        .andExpect(status().is(200)).andExpect(content().json("[]"));
+    mvc
+        .perform(get("/api/user/nutzer1/gruppen"))
+        .andExpect(status().is(200))
+        .andExpect(content().json("[]"));
 
   }
 
@@ -88,18 +114,32 @@ public class RestControllerTest {
         new GruppeFactory()
             .withId(0L)
             .withName("Tour 2023")
-            .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+            .withMitglieder(Set.of(
+                "Mick",
+                "Keith",
+                "Ronnie"
+            ))
             .withAusgaben(Set.of(
                 new AusgabeFactory()
                     .withBeschreibung("Black Paint")
-                    .withBetrag(Money.of(25.99, "EUR"))
+                    .withBetrag(Money.of(
+                        25.99,
+                        "EUR"
+                    ))
                     .withGlaeubiger("Keith")
-                    .withSchuldner(Set.of("Mick", "Keith", "Ronnie"))
+                    .withSchuldner(Set.of(
+                        "Mick",
+                        "Keith",
+                        "Ronnie"
+                    ))
                     .build()
-            )).build());
+            ))
+            .build());
 
-    mvc.perform(get("/api/gruppen/0"))
-        .andExpect(status().is(200)).andExpect(
+    mvc
+        .perform(get("/api/gruppen/0"))
+        .andExpect(status().is(200))
+        .andExpect(
             content().json(
                 "{\"gruppe\" : \"0\", \"name\" : \"Tour 2023\","
                     + " \"personen\" : [\"Mick\", \"Keith\", \"Ronnie\"], "
@@ -114,7 +154,8 @@ public class RestControllerTest {
   void test_6() throws Exception {
     when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
-    mvc.perform(get("/api/gruppen/0"))
+    mvc
+        .perform(get("/api/gruppen/0"))
         .andExpect(status().is(404));
 
   }
@@ -123,8 +164,11 @@ public class RestControllerTest {
   @DisplayName("Schliese Gruppe, wenn alles korrekt")
   void test_7() throws Exception {
     when(gruppenService.getGruppeById("0"))
-        .thenReturn(new GruppeFactory().withId(0).build());
-    mvc.perform(post("/api/gruppen/0/schliessen"))
+        .thenReturn(new GruppeFactory()
+            .withId(0)
+            .build());
+    mvc
+        .perform(post("/api/gruppen/0/schliessen"))
         .andExpect(status().is(200));
 
     verify(gruppenService).schliesseGruppe(0L);
@@ -134,10 +178,15 @@ public class RestControllerTest {
   @DisplayName("Schliese Gruppe gibt 404, wenn Gruppe nicht existiert")
   void test_8() throws Exception {
     when(gruppenService.getGruppeById("0"))
-        .thenReturn(new GruppeFactory().withId(0).build());
-    doThrow(GruppeNotFoundException.class).when(gruppenService).schliesseGruppe(0);
+        .thenReturn(new GruppeFactory()
+            .withId(0)
+            .build());
+    doThrow(GruppeNotFoundException.class)
+        .when(gruppenService)
+        .schliesseGruppe(0);
 
-    mvc.perform(post("/api/gruppen/0/schliessen"))
+    mvc
+        .perform(post("/api/gruppen/0/schliessen"))
         .andExpect(status().is(404));
 
   }
@@ -148,12 +197,17 @@ public class RestControllerTest {
     Gruppe mockedResult = new GruppeFactory()
         .withId(0L)
         .withName("Tour 2023")
-        .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+        .withMitglieder(Set.of(
+            "Mick",
+            "Keith",
+            "Ronnie"
+        ))
         .build();
 
     when(gruppenService.getGruppeById("0")).thenReturn(mockedResult);
 
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
                 + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -162,9 +216,18 @@ public class RestControllerTest {
     verify(gruppenService).addAusgabe(
         0L,
         "Black Paint",
-        Money.of(2599, "EUR").divide(100),
+        Money
+            .of(
+                2599,
+                "EUR"
+            )
+            .divide(100),
         "Keith",
-        Set.of("Mick", "Keith", "Ronnie")
+        Set.of(
+            "Mick",
+            "Keith",
+            "Ronnie"
+        )
     );
   }
 
@@ -173,7 +236,8 @@ public class RestControllerTest {
   void test_10() throws Exception {
     when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
                 + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -188,12 +252,17 @@ public class RestControllerTest {
         .withId(0L)
         .withName("Tour 2023")
         .withIstOffen(false)
-        .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+        .withMitglieder(Set.of(
+            "Mick",
+            "Keith",
+            "Ronnie"
+        ))
         .build();
 
     when(gruppenService.getGruppeById("0")).thenReturn(mockedResult);
 
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
                 + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -203,7 +272,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Grund)")
   void test_12() throws Exception {
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"glaeubiger\": \"Keith\","
                 + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -213,7 +283,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Glaeubiger)")
   void test_13() throws Exception {
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\","
                 + "\"cent\" : 2599, \"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -223,7 +294,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Cent)")
   void test_14() throws Exception {
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
                 + "\"schuldner\" : [\"Mick\", \"Keith\", \"Ronnie\"]}"))
@@ -233,7 +305,8 @@ public class RestControllerTest {
   @Test
   @DisplayName("Füge Ausgabe zu Gruppe hinzu gibt 400, wenn Request Body fehlerhaft (Schuldner)")
   void test_15() throws Exception {
-    mvc.perform(post("/api/gruppen/0/auslagen")
+    mvc
+        .perform(post("/api/gruppen/0/auslagen")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"grund\": \"Black Paint\", \"glaeubiger\": \"Keith\","
                 + "\"cent\" : 2599}"))
@@ -247,18 +320,32 @@ public class RestControllerTest {
         new GruppeFactory()
             .withId(0L)
             .withName("Tour 2023")
-            .withMitglieder(Set.of("Mick", "Keith", "Ronnie"))
+            .withMitglieder(Set.of(
+                "Mick",
+                "Keith",
+                "Ronnie"
+            ))
             .withAusgaben(Set.of(
                 new AusgabeFactory()
                     .withBeschreibung("Black Paint")
-                    .withBetrag(Money.of(25.98, "EUR"))
+                    .withBetrag(Money.of(
+                        25.98,
+                        "EUR"
+                    ))
                     .withGlaeubiger("Keith")
-                    .withSchuldner(Set.of("Mick", "Keith", "Ronnie"))
+                    .withSchuldner(Set.of(
+                        "Mick",
+                        "Keith",
+                        "Ronnie"
+                    ))
                     .build()
-            )).build());
+            ))
+            .build());
 
-    mvc.perform(get("/api/gruppen/0/ausgleich"))
-        .andExpect(status().is(200)).andExpect(
+    mvc
+        .perform(get("/api/gruppen/0/ausgleich"))
+        .andExpect(status().is(200))
+        .andExpect(
             content().json(
                 "[{\"von\" : \"Mick\","
                     + "\"an\" : \"Keith\","
@@ -273,7 +360,8 @@ public class RestControllerTest {
   void test_17() throws Exception {
     when(gruppenService.getGruppeById("0")).thenThrow(GruppeNotFoundException.class);
 
-    mvc.perform(get("/api/gruppen/0/ausgleich"))
+    mvc
+        .perform(get("/api/gruppen/0/ausgleich"))
         .andExpect(status().is(404));
   }
 }

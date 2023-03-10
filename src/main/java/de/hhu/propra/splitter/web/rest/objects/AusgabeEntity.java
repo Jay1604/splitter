@@ -8,9 +8,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
-public record AusgabeEntity(@NotBlank String grund,
-                            @NotBlank String glaeubiger,
-                            @NotNull @Min(0) Integer cent,
-                            @NotEmpty List<String> schuldner) {
+public record AusgabeEntity(
+    @NotBlank String grund,
+    @NotBlank String glaeubiger,
+    @NotNull @Min(0) Integer cent,
+    @NotEmpty List<String> schuldner
+) {
 
 }

@@ -15,7 +15,11 @@ public class Gruppe {
   private boolean offen;
   private Set<Ausgabe> ausgaben;
 
-  public Gruppe(Long id, String gruender, String name) {
+  public Gruppe(
+      Long id,
+      String gruender,
+      String name
+  ) {
     this.id = id;
     this.mitglieder = new HashSet<>(Set.of(new Person(gruender)));
     this.name = name;
@@ -54,13 +58,20 @@ public class Gruppe {
         .stream()
         .map(this::getPersonfromGithubName)
         .collect(Collectors.toSet());
-    this.ausgaben.add(new Ausgabe(beschreibung, betrag, glaeubigerPerson, schuldnerPersonen));
+    this.ausgaben.add(new Ausgabe(
+        beschreibung,
+        betrag,
+        glaeubigerPerson,
+        schuldnerPersonen
+    ));
   }
 
   private Person getPersonfromGithubName(String user) {
     return mitglieder
         .stream()
-        .filter(a -> a.getGitHubName().equals(user))
+        .filter(a -> a
+            .getGitHubName()
+            .equals(user))
         .findFirst()
         .orElseThrow(PersonNotFoundException::new);
   }
@@ -75,6 +86,5 @@ public class Gruppe {
 
   public void setId(Long id) {
     this.id = id;
-
   }
 }

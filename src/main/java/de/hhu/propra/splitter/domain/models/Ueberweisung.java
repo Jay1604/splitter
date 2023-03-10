@@ -8,7 +8,11 @@ public class Ueberweisung {
   Person sender;
   Money betrag;
 
-  public Ueberweisung(Person sender, Person empfaenger, Money betrag) {
+  public Ueberweisung(
+      Person sender,
+      Person empfaenger,
+      Money betrag
+  ) {
     this.empfaenger = empfaenger;
     this.sender = sender;
     this.betrag = Money.from(betrag);

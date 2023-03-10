@@ -26,8 +26,10 @@ public class GruppenServiceTest {
 
   @BeforeEach
   void init() {
-    gruppenRepository = new GruppenRepositoryImpl(springPersonenRepository,
-        springGruppenRepository);
+    gruppenRepository = new GruppenRepositoryImpl(
+        springPersonenRepository,
+        springGruppenRepository
+    );
   }
 
   @Test
@@ -37,12 +39,17 @@ public class GruppenServiceTest {
     String personA = "personA";
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    gruppenService.addGruppe(personA, "gruppe1");
+    gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
 
-    assertThat(gruppeForPersonA).extracting(
-        Gruppe::getName
-    ).containsExactly("gruppe1");
+    assertThat(gruppeForPersonA)
+        .extracting(
+            Gruppe::getName
+        )
+        .containsExactly("gruppe1");
   }
 
   @Test
@@ -53,7 +60,10 @@ public class GruppenServiceTest {
 
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    gruppenService.addGruppe(personA, "gruppe1");
+    gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
 
     assertThat(gruppeForPersonB).isEmpty();
@@ -68,18 +78,34 @@ public class GruppenServiceTest {
 
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    Long gruppe1Id = gruppenService.addGruppe(personA, "gruppe1");
-    gruppenService.addGruppe(personB, "gruppe2");
-    gruppenService.addPersonToGruppe(personB, gruppe1Id);
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    gruppenService.addGruppe(
+        personB,
+        "gruppe2"
+    );
+    gruppenService.addPersonToGruppe(
+        personB,
+        gruppe1Id
+    );
     Set<Gruppe> gruppeForPersonA = gruppenService.getGruppenForGithubName("personA");
     Set<Gruppe> gruppeForPersonB = gruppenService.getGruppenForGithubName("personB");
 
-    assertThat(gruppeForPersonA).extracting(
-        Gruppe::getName
-    ).containsExactly("gruppe1");
-    assertThat(gruppeForPersonB).extracting(
-        Gruppe::getName
-    ).containsExactlyInAnyOrder("gruppe1", "gruppe2");
+    assertThat(gruppeForPersonA)
+        .extracting(
+            Gruppe::getName
+        )
+        .containsExactly("gruppe1");
+    assertThat(gruppeForPersonB)
+        .extracting(
+            Gruppe::getName
+        )
+        .containsExactlyInAnyOrder(
+            "gruppe1",
+            "gruppe2"
+        );
   }
 
 

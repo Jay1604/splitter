@@ -43,13 +43,21 @@ public class GruppeFactory {
 
   public Gruppe build() {
     Iterator<String> userIterator = this.mitglieder.iterator();
-    Gruppe object = new Gruppe(id, userIterator.next(), this.name);
+    Gruppe object = new Gruppe(
+        id,
+        userIterator.next(),
+        this.name
+    );
     while (userIterator.hasNext()) {
       object.addMitglied(userIterator.next());
     }
     for (AusgabeTestobjekt debit : this.ausgaben) {
-      object.addAusgabe(debit.beschreibung(), debit.betrag(), debit.glauebiger(),
-          debit.schuldner());
+      object.addAusgabe(
+          debit.beschreibung(),
+          debit.betrag(),
+          debit.glauebiger(),
+          debit.schuldner()
+      );
     }
     object.setOffen(this.istOffen);
     return object;

@@ -38,8 +38,13 @@ public class Gruppe {
   }
 
   @PersistenceCreator
-  public Gruppe(Integer id, String gruppeName, Boolean offen, Set<Mitglied> mitglieder,
-      Set<Ausgabe> ausgaben) {
+  public Gruppe(
+      Integer id,
+      String gruppeName,
+      Boolean offen,
+      Set<Mitglied> mitglieder,
+      Set<Ausgabe> ausgaben
+  ) {
     this.id = id;
     this.gruppeName = gruppeName;
     this.offen = offen;
@@ -48,7 +53,13 @@ public class Gruppe {
   }
 
   public Gruppe(String gruppeName) {
-    this(null, gruppeName, true, Set.of(), Set.of());
+    this(
+        null,
+        gruppeName,
+        true,
+        Set.of(),
+        Set.of()
+    );
   }
 
   @Override
@@ -63,6 +74,9 @@ public class Gruppe {
   }
 
   public void addMitglied(Person person) {
-    this.mitglieder.add(new Mitglied(person.id(), this.id));
+    this.mitglieder.add(new Mitglied(
+        person.id(),
+        this.id
+    ));
   }
 }

@@ -2,7 +2,6 @@ package de.hhu.propra.splitter.web.controller;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.exceptions.GruppeGeschlossenException;
-import de.hhu.propra.splitter.exceptions.GruppeHasAusgabenException;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
@@ -18,13 +17,11 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 public class AusgabeHinzufuegenController {
@@ -39,57 +36,95 @@ public class AusgabeHinzufuegenController {
   }
 
   @GetMapping("/gruppe/ausgabeHinzufuegen")
-  public String ausgabeHinzufuegenView(Model m,
+  public String ausgabeHinzufuegenView(
+      Model m,
       @ModelAttribute AusgabeHinzufuegenForm ausgabeHinzufuegenForm,
-      OAuth2AuthenticationToken token, @RequestParam(value = "nr") long gruppeId) {
+      OAuth2AuthenticationToken token,
+      @RequestParam(value = "nr") long gruppeId
+  ) {
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), gruppeId);
+        token
+            .getPrincipal()
+            .getAttribute("login"),
+        gruppeId
+    );
     if (gruppe.isOffen()) {
-      m.addAttribute("gruppeId", gruppeId);
-      m.addAttribute("mitglieder", gruppe.getMitglieder());
+      m.addAttribute(
+          "gruppeId",
+          gruppeId
+      );
+      m.addAttribute(
+          "mitglieder",
+          gruppe.getMitglieder()
+      );
       return "ausgabeHinzufuegen";
     }
     return "redirect:/gruppe?nr=" + gruppeId;
   }
 
   @PostMapping("/gruppe/ausgabeHinzufuegen")
-  public String ausgabeHinzufuegen(Model m, OAuth2AuthenticationToken token,
-      @Valid AusgabeHinzufuegenForm ausgabeHinzufuegenForm, BindingResult bindingResult,
-      HttpServletResponse response) {
+  public String ausgabeHinzufuegen(
+      Model m,
+      OAuth2AuthenticationToken token,
+      @Valid AusgabeHinzufuegenForm ausgabeHinzufuegenForm,
+      BindingResult bindingResult,
+      HttpServletResponse response
+  ) {
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       if (ausgabeHinzufuegenForm.gruppeId() == null) {
         throw new GruppeNotFoundException();
       }
       Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-          token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
-      m.addAttribute("gruppeId", ausgabeHinzufuegenForm.gruppeId());
-      m.addAttribute("mitglieder", gruppe.getMitglieder());
+          token
+              .getPrincipal()
+              .getAttribute("login"),
+          ausgabeHinzufuegenForm.gruppeId()
+      );
+      m.addAttribute(
+          "gruppeId",
+          ausgabeHinzufuegenForm.gruppeId()
+      );
+      m.addAttribute(
+          "mitglieder",
+          gruppe.getMitglieder()
+      );
       return "ausgabeHinzufuegen";
     }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
-        token.getPrincipal().getAttribute("login"), ausgabeHinzufuegenForm.gruppeId());
+        token
+            .getPrincipal()
+            .getAttribute("login"),
+        ausgabeHinzufuegenForm.gruppeId()
+    );
     if (!gruppe.isOffen()) {
       throw new GruppeGeschlossenException();
     }
 
-    gruppenService.addAusgabe(ausgabeHinzufuegenForm.gruppeId(),
+    gruppenService.addAusgabe(
+        ausgabeHinzufuegenForm.gruppeId(),
         ausgabeHinzufuegenForm.beschreibung(),
         Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
-        ausgabeHinzufuegenForm.glaeubiger(), ausgabeHinzufuegenForm.schuldner());
+        ausgabeHinzufuegenForm.glaeubiger(),
+        ausgabeHinzufuegenForm.schuldner()
+    );
 
     return "redirect:/gruppe?nr=" + ausgabeHinzufuegenForm.gruppeId();
   }
 
   @ExceptionHandler(GruppeGeschlossenException.class)
   public ResponseEntity<String> handleGruppeGeschlossenException() {
-    return new ResponseEntity<String>("Gruppe ist geschlossen",
-        HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<String>(
+        "Gruppe ist geschlossen",
+        HttpStatus.BAD_REQUEST
+    );
   }
 
   @ExceptionHandler(PersonNotFoundException.class)
   public ResponseEntity<String> handlePersonNotFoundException() {
-    return new ResponseEntity<String>("Person nicht gefunden",
-        HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<String>(
+        "Person nicht gefunden",
+        HttpStatus.BAD_REQUEST
+    );
   }
 }

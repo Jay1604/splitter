@@ -26,16 +26,32 @@ public class GruppeListController {
   }
 
   @GetMapping("/")
-  public String gruppeListView(Model m, OAuth2AuthenticationToken auth) {
+  public String gruppeListView(
+      Model m,
+      OAuth2AuthenticationToken auth
+  ) {
     Set<Gruppe> gruppen = gruppenService.getGruppenForGithubName(
-        auth.getPrincipal().getAttribute("login"));
+        auth
+            .getPrincipal()
+            .getAttribute("login"));
 
-    var geschlosseneGruppen = gruppen.stream().filter(not(Gruppe::isOffen))
+    var geschlosseneGruppen = gruppen
+        .stream()
+        .filter(not(Gruppe::isOffen))
         .collect(Collectors.toSet());
-    var offeneGruppen = gruppen.stream().filter(Gruppe::isOffen).collect(Collectors.toSet());
+    var offeneGruppen = gruppen
+        .stream()
+        .filter(Gruppe::isOffen)
+        .collect(Collectors.toSet());
 
-    m.addAttribute("offeneGruppen", offeneGruppen);
-    m.addAttribute("geschlosseneGruppen", geschlosseneGruppen);
+    m.addAttribute(
+        "offeneGruppen",
+        offeneGruppen
+    );
+    m.addAttribute(
+        "geschlosseneGruppen",
+        geschlosseneGruppen
+    );
     return "gruppeList";
   }
 }

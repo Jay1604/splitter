@@ -7,7 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SplitterApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(SplitterApplication.class, args);
+    SpringApplication.run(
+        SplitterApplication.class,
+        args
+    );
   }
 
 }

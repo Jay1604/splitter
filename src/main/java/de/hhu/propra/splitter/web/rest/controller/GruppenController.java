@@ -44,12 +44,27 @@ public class GruppenController {
     if (bindingResult.hasErrors()) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    Long gruppenId = gruppenService.addGruppe(gruppe.personen().get(0), gruppe.name());
-    for (String person : gruppe.personen().stream().skip(1).toList()) {
-      gruppenService.addPersonToGruppe(person, gruppenId);
+    Long gruppenId = gruppenService.addGruppe(
+        gruppe
+            .personen()
+            .get(0),
+        gruppe.name()
+    );
+    for (String person : gruppe
+        .personen()
+        .stream()
+        .skip(1)
+        .toList()) {
+      gruppenService.addPersonToGruppe(
+          person,
+          gruppenId
+      );
     }
 
-    return new ResponseEntity<>(gruppenId.toString(), HttpStatus.CREATED);
+    return new ResponseEntity<>(
+        gruppenId.toString(),
+        HttpStatus.CREATED
+    );
   }
 
 
@@ -60,23 +75,57 @@ public class GruppenController {
     Set<de.hhu.propra.splitter.domain.models.Gruppe> gruppen =
         gruppenService.getGruppenForGithubName(login);
 
-    return gruppen.stream().map(a -> new SimpleGruppenEntity(a.getId().toString(), a.getName(),
-        a.getMitglieder().stream().map(Person::getGitHubName).toList())).toList();
+    return gruppen
+        .stream()
+        .map(a -> new SimpleGruppenEntity(
+            a
+                .getId()
+                .toString(),
+            a.getName(),
+            a
+                .getMitglieder()
+                .stream()
+                .map(Person::getGitHubName)
+                .toList()
+        ))
+        .toList();
   }
 
   @GetMapping("/gruppen/{id}")
   public DetailedGruppeEntity gruppenDetailsById(@PathVariable("id") String gruppenId) {
     Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
 
-    return new DetailedGruppeEntity(gruppenId, gruppe.getName(),
-        gruppe.getMitglieder().stream().map(Person::getGitHubName).toList(), !gruppe.isOffen(),
-        gruppe.getAusgaben().stream().map(
-            a -> new AusgabeEntity(
-                a.getBeschreibung(),
-                a.getGlaeubiger().getGitHubName(),
-                a.getBetrag().multiply(100L).getNumber().intValue(), //TODO:...
-                a.getSchuldner().stream().map(Person::getGitHubName).toList()
-            )).toList());
+    return new DetailedGruppeEntity(
+        gruppenId,
+        gruppe.getName(),
+        gruppe
+            .getMitglieder()
+            .stream()
+            .map(Person::getGitHubName)
+            .toList(),
+        !gruppe.isOffen(),
+        gruppe
+            .getAusgaben()
+            .stream()
+            .map(
+                a -> new AusgabeEntity(
+                    a.getBeschreibung(),
+                    a
+                        .getGlaeubiger()
+                        .getGitHubName(),
+                    a
+                        .getBetrag()
+                        .multiply(100L)
+                        .getNumber()
+                        .intValue(),
+                    a
+                        .getSchuldner()
+                        .stream()
+                        .map(Person::getGitHubName)
+                        .toList()
+                ))
+            .toList()
+    );
   }
 
   @PostMapping("/gruppen/{id}/schliessen")
@@ -105,7 +154,12 @@ public class GruppenController {
       gruppenService.addAusgabe(
           gruppe.getId(),
           ausgabe.grund(),
-          Money.of(ausgabe.cent(), "EUR").divide(100),
+          Money
+              .of(
+                  ausgabe.cent(),
+                  "EUR"
+              )
+              .divide(100),
           ausgabe.glaeubiger(),
           new HashSet<>(ausgabe.schuldner())
       );
@@ -121,12 +175,24 @@ public class GruppenController {
   ) {
     Gruppe gruppe = gruppenService.getGruppeById(gruppenId);
     AusgleichService ausgleichService = new AusgleichService();
-    return ausgleichService.berechneAusgleichUeberweisungen(gruppe).stream().map(
-        ueberweisung -> new UeberweisungEntity(
-            ueberweisung.getSender().getGitHubName(),
-            ueberweisung.getEmpfaenger().getGitHubName(),
-            ueberweisung.getBetrag().multiply(100L).getNumber().intValue()
+    return ausgleichService
+        .berechneAusgleichUeberweisungen(gruppe)
+        .stream()
+        .map(
+            ueberweisung -> new UeberweisungEntity(
+                ueberweisung
+                    .getSender()
+                    .getGitHubName(),
+                ueberweisung
+                    .getEmpfaenger()
+                    .getGitHubName(),
+                ueberweisung
+                    .getBetrag()
+                    .multiply(100L)
+                    .getNumber()
+                    .intValue()
+            )
         )
-    ).toList();
+        .toList();
   }
 }
