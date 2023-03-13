@@ -49,3 +49,10 @@ Schnittstelle um Benutzer zu Authentifizieren. Die Zuordnung erfolgt über den G
 
 ![Architektur](arch.png)
 
+# Architekturentscheidungen
+
+Dieses Projekt verwendet die Onion-Architektur. Dies wird erreicht, indem das Programm in die 
+Packages web, domain, persistence und services aufgeteilt und auf lose Abhängigkeiten geachtet wird.
+
+Dabei zeigen Abhängigkeiten immer nur nach innen. 
+
