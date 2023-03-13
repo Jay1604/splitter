@@ -1,8 +1,10 @@
 package de.hhu.propra.splitter.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.persistence.GruppenRepositoryImpl;
 import de.hhu.propra.splitter.persistence.SpringDataGruppenRepository;
 import de.hhu.propra.splitter.persistence.SpringDataPersonenRepository;
@@ -106,6 +108,82 @@ public class GruppenServiceTest {
             "gruppe1",
             "gruppe2"
         );
+  }
+
+  @Test
+  @DisplayName("Es wird die Gruppe nach Id ausgegeben, wenn mitglied")
+  @Sql("clear__tables.sql")
+  void test_4() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    Gruppe gruppeForPersonA = gruppenService.getGruppeForGithubNameById(
+        personA,
+        gruppe1Id
+    );
+
+    assertThat(gruppeForPersonA.getName()).isEqualTo("gruppe1");
+  }
+
+  @Test
+  @DisplayName("Es wird die Gruppe nach Id nicht ausgegeben, wenn nicht mitglied")
+  @Sql("clear__tables.sql")
+  void test_5() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    assertThrows(
+        GruppeNotFoundException.class,
+        () -> gruppenService.getGruppeForGithubNameById(
+            "NichtPersonA",
+            gruppe1Id
+        )
+    );
+  }
+
+  @Test
+  @DisplayName("Erstellte Gruppe ist offen")
+  @Sql("clear__tables.sql")
+  void test_6() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe1Id);
+    assertThat(gruppe.isOffen()).isTrue();
+  }
+
+  @Test
+  @DisplayName("Gruppe wird beim aufruf von schliesseGruppe geschlossen")
+  @Sql("clear__tables.sql")
+  void test_7() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    gruppenService.schliesseGruppe(gruppe1Id);
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe1Id);
+    assertThat(gruppe.isOffen()).isFalse();
   }
 
 

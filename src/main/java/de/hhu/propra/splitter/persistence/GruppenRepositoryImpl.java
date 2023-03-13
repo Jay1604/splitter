@@ -37,7 +37,6 @@ public class GruppenRepositoryImpl implements GruppenRepository {
         );
     while (listMitglieder.hasNext()) {
       gruppe.addMitglied(getMitgliedName(listMitglieder.next()));
-
     }
     for (Ausgabe ausgabe : gruppeDto.getAusgaben()) {
       gruppe.addAusgabe(
@@ -57,6 +56,7 @@ public class GruppenRepositoryImpl implements GruppenRepository {
               .collect(Collectors.toSet())
       );
     }
+    gruppe.setOffen(gruppeDto.getOffen());
     return gruppe;
   }
 
@@ -75,7 +75,6 @@ public class GruppenRepositoryImpl implements GruppenRepository {
   }
 
   public Gruppe fromGruppe(de.hhu.propra.splitter.domain.models.Gruppe gruppe) {
-
     return new Gruppe(
         gruppe
             .getId()
