@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.relational.core.mapping.Column;
 
 @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Gruppe {
@@ -71,12 +70,5 @@ public class Gruppe {
         + ", mitglieder=" + mitglieder
         + ", ausgaben=" + ausgaben
         + '}';
-  }
-
-  public void addMitglied(Person person) {
-    this.mitglieder.add(new Mitglied(
-        person.id(),
-        this.id
-    ));
   }
 }

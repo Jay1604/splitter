@@ -1,14 +1,18 @@
 package de.hhu.propra.splitter.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.hhu.propra.splitter.domain.models.Ausgabe;
 import de.hhu.propra.splitter.domain.models.Gruppe;
+import de.hhu.propra.splitter.domain.models.Person;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.persistence.GruppenRepositoryImpl;
 import de.hhu.propra.splitter.persistence.SpringDataGruppenRepository;
 import de.hhu.propra.splitter.persistence.SpringDataPersonenRepository;
 import java.util.Set;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -186,5 +190,175 @@ public class GruppenServiceTest {
     assertThat(gruppe.isOffen()).isFalse();
   }
 
+  @Test
+  @DisplayName("Gruppe nach id gibt korrekte Gruppe zurück")
+  @Sql("clear__tables.sql")
+  void test_8() {
+    String personA = "personA";
 
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    Long gruppe2Id = gruppenService.addGruppe(
+        personA,
+        "gruppe2"
+    );
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe2Id);
+    assertThat(gruppe.getName()).isEqualTo("gruppe2");
+  }
+
+  @Test
+  @DisplayName("Gruppe nach id (als String) gibt korrekte Gruppe zurück")
+  @Sql("clear__tables.sql")
+  void test_9() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    Long gruppe2Id = gruppenService.addGruppe(
+        personA,
+        "gruppe2"
+    );
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe2Id.toString());
+    assertThat(gruppe.getName()).isEqualTo("gruppe2");
+  }
+
+  @Test
+  @DisplayName("Gruppe nach id raised GruppeNotFoundException wenn keine Gruppe gefunden")
+  @Sql("clear__tables.sql")
+  void test_10() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    assertThrows(
+        GruppeNotFoundException.class,
+        () -> gruppenService.getGruppeById(gruppe1Id + 1)
+    );
+  }
+
+  @Test
+  @DisplayName("Gruppe nach id (als String) raised GruppeNotFoundException wenn id nicht numerisch")
+  @Sql("clear__tables.sql")
+  void test_11() {
+    String personA = "personA";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    assertThrows(
+        GruppeNotFoundException.class,
+        () -> gruppenService.getGruppeById("GibtEsNicht")
+    );
+  }
+
+  @Test
+  @DisplayName("Gruppen Service fügt Ausgaben korrekt hinzu")
+  @Sql("clear__tables.sql")
+  void test_12() {
+    String personA = "personA";
+    String personB = "personB";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    gruppenService.addPersonToGruppe(
+        personB,
+        gruppe1Id
+    );
+
+    gruppenService.addAusgabe(
+        gruppe1Id,
+        "TestAusgabe1",
+        Money.of(
+            20,
+            "EUR"
+        ),
+        personA,
+        Set.of(
+            personA,
+            personB
+        )
+    );
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe1Id);
+
+    assertThat(gruppe.getAusgaben())
+        .extracting(
+            Ausgabe::getBeschreibung,
+            Ausgabe::getBetrag,
+            (a -> a
+                .getGlaeubiger()
+                .getGitHubName())
+        )
+        .containsExactly(
+            tuple(
+                "TestAusgabe1",
+                Money.of(
+                    20,
+                    "EUR"
+                ),
+                personA
+            )
+        );
+    assertThat(gruppe
+        .getAusgaben()
+        .iterator()
+        .next()
+        .getSchuldner())
+        .extracting(Person::getGitHubName)
+        .containsExactlyInAnyOrder(
+            personA,
+            personB
+        );
+  }
+
+  @Test
+  @DisplayName("Gruppe fügt Personen korrekt hinzu")
+  @Sql("clear__tables.sql")
+  void test_13() {
+    String personA = "personA";
+    String personB = "personB";
+
+    GruppenService gruppenService = new GruppenService(gruppenRepository);
+
+    Long gruppe1Id = gruppenService.addGruppe(
+        personA,
+        "gruppe1"
+    );
+    gruppenService.addPersonToGruppe(
+        personB,
+        gruppe1Id
+    );
+
+    Gruppe gruppe = gruppenService.getGruppeById(gruppe1Id);
+
+    assertThat(gruppe.getMitglieder())
+        .extracting(Person::getGitHubName)
+        .containsExactlyInAnyOrder(
+            personA,
+            personB
+        );
+  }
+
+  // addPersonToGruppe
 }
