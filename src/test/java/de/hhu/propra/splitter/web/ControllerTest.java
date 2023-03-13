@@ -1,6 +1,7 @@
 package de.hhu.propra.splitter.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import de.hhu.propra.splitter.config.SecurityConfig;
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
+import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.helper.WithMockOAuth2User;
 import de.hhu.propra.splitter.services.GruppenService;
 import java.util.Set;
@@ -133,6 +135,9 @@ public class ControllerTest {
         "nutzer1",
         "Gruppe 1"
     );
+    mockedResult.addMitglied("nutzer2");
+    mockedResult.addAusgabe("test", Money.of(10.02, "EUR"), "nutzer1", Set.of("nutzer1", "nutzer2"));
+
     when(gruppenService.getGruppeForGithubNameById(
         "nutzer1",
         0L
@@ -790,4 +795,178 @@ public class ControllerTest {
   }
 
   //endregion
+
+  @Test
+  @DisplayName("Wenn Gruppe geschlossen, dann leitet gruppe/ausgabeHinzufuegen zur Gruppe zurück")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_30() throws Exception {
+    Gruppe mockGruppe = new Gruppe(
+        0L,
+        "nutzer1",
+        "Gruppe 1"
+    );
+    mockGruppe.setOffen(false);
+
+    when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockGruppe);
+    MvcResult mvcResult = mvc.perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
+        .andExpect(status().is3xxRedirection()).andReturn();
+
+    assertThat(mvcResult.getResponse().getRedirectedUrl()).contains("/gruppe?nr=0");
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen wenn Gruppe geschlossen")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_31() throws Exception {
+    Gruppe mockedResult = new Gruppe(
+        0L,
+        "nutzer1",
+        "Gruppe 1"
+    );
+    mockedResult.addMitglied("nutzer2");
+    mockedResult.setOffen(false);
+
+    when(gruppenService.getGruppeForGithubNameById(
+        "nutzer1",
+        0L
+    )).thenReturn(mockedResult);
+    mvc
+        .perform(
+            post("/gruppe/ausgabeHinzufuegen")
+                .param(
+                    "gruppeId",
+                    "0"
+                )
+                .param(
+                    "betrag",
+                    "10.02"
+                )
+                .param(
+                    "beschreibung",
+                    "test"
+                )
+                .param(
+                    "glaeubiger",
+                    "nutzer1"
+                )
+                .param(
+                    "schuldner",
+                    "nutzer1"
+                )
+                .param(
+                    "schuldner",
+                    "nutzer2"
+                )
+                .with(csrf())
+        )
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request in /gruppe/ausgabeHinzufuegen wenn Person nicht vorhanden")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_32() throws Exception {
+    Gruppe mockedResult = new Gruppe(
+        0L,
+        "nutzer1",
+        "Gruppe 1"
+    );
+    mockedResult.addMitglied("nutzer2");
+
+    when(gruppenService.getGruppeForGithubNameById(
+        "nutzer1",
+        0L
+    )).thenReturn(mockedResult);
+    doThrow(PersonNotFoundException.class).when(gruppenService)
+        .addAusgabe(0L, "test", Money.of(10.02, "EUR"), "nutzer1",
+            Set.of("nutzer1", "existiertNicht"));
+    mvc
+        .perform(
+            post("/gruppe/ausgabeHinzufuegen")
+                .param(
+                    "gruppeId",
+                    "0"
+                )
+                .param(
+                    "betrag",
+                    "10.02"
+                )
+                .param(
+                    "beschreibung",
+                    "test"
+                )
+                .param(
+                    "glaeubiger",
+                    "nutzer1"
+                )
+                .param(
+                    "schuldner",
+                    "nutzer1"
+                )
+                .param(
+                    "schuldner",
+                    "existiertNicht"
+                )
+                .with(csrf())
+        )
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
+
+  @Test
+  @WithMockOAuth2User(login = "nutzer1")
+  @DisplayName("Route /gruppe/personHinzufuegen?nr= leitet wenn gruppe geschlossen ist")
+  void test_33() throws Exception {
+    Gruppe mockedResult = new Gruppe(
+        0L,
+        "nutzer1",
+        "Gruppe 1"
+    );
+
+    mockedResult.setOffen(false);
+
+    when(gruppenService.getGruppeForGithubNameById(
+        "nutzer1",
+        0L
+    )).thenReturn(mockedResult);
+    MvcResult mvcResult = mvc
+        .perform(get("/gruppe/personHinzufuegen?nr=0"))
+        .andExpect(status().is3xxRedirection()).andReturn();
+
+    assertThat(mvcResult.getResponse().getRedirectedUrl()).contains("/gruppe?nr=0");
+  }
+
+  @Test
+  @DisplayName("Testen des Post Request /gruppe/personHinzufuegen "
+      + "wenn Gruppe bereits Transaktionen hat")
+  @WithMockOAuth2User(login = "nutzer1")
+  void test_34() throws Exception {
+    Gruppe mockedResult = new Gruppe(
+        0L,
+        "nutzer1",
+        "Gruppe 1"
+    );
+    mockedResult.addAusgabe("test", Money.of(10.02, "EUR"), "nutzer1",
+        Set.of("nutzer1"));
+    when(gruppenService.getGruppeForGithubNameById(
+        "nutzer1",
+        0L
+    )).thenReturn(mockedResult);
+    mvc
+        .perform(
+            post("/gruppe/personHinzufuegen")
+                .param(
+                    "id",
+                    "0"
+                )
+                .param(
+                    "name",
+                    "Nutzer2"
+                )
+                .with(csrf())
+        )
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
 }
