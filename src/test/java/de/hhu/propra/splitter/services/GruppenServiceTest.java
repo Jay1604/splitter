@@ -198,7 +198,7 @@ public class GruppenServiceTest {
 
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    Long gruppe1Id = gruppenService.addGruppe(
+    gruppenService.addGruppe(
         personA,
         "gruppe1"
     );
@@ -219,7 +219,7 @@ public class GruppenServiceTest {
 
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    Long gruppe1Id = gruppenService.addGruppe(
+    gruppenService.addGruppe(
         personA,
         "gruppe1"
     );
@@ -258,7 +258,7 @@ public class GruppenServiceTest {
 
     GruppenService gruppenService = new GruppenService(gruppenRepository);
 
-    Long gruppe1Id = gruppenService.addGruppe(
+    gruppenService.addGruppe(
         personA,
         "gruppe1"
     );
