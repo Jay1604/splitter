@@ -136,7 +136,18 @@ public class ControllerTest {
         "Gruppe 1"
     );
     mockedResult.addMitglied("nutzer2");
-    mockedResult.addAusgabe("test", Money.of(10.02, "EUR"), "nutzer1", Set.of("nutzer1", "nutzer2"));
+    mockedResult.addAusgabe(
+        "test",
+        Money.of(
+            10.02,
+            "EUR"
+        ),
+        "nutzer1",
+        Set.of(
+            "nutzer1",
+            "nutzer2"
+        )
+    );
 
     when(gruppenService.getGruppeForGithubNameById(
         "nutzer1",
@@ -807,11 +818,18 @@ public class ControllerTest {
     );
     mockGruppe.setOffen(false);
 
-    when(gruppenService.getGruppeForGithubNameById("nutzer1", 0L)).thenReturn(mockGruppe);
-    MvcResult mvcResult = mvc.perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
-        .andExpect(status().is3xxRedirection()).andReturn();
+    when(gruppenService.getGruppeForGithubNameById(
+        "nutzer1",
+        0L
+    )).thenReturn(mockGruppe);
+    MvcResult mvcResult = mvc
+        .perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
 
-    assertThat(mvcResult.getResponse().getRedirectedUrl()).contains("/gruppe?nr=0");
+    assertThat(mvcResult
+        .getResponse()
+        .getRedirectedUrl()).contains("/gruppe?nr=0");
   }
 
   @Test
@@ -878,9 +896,21 @@ public class ControllerTest {
         "nutzer1",
         0L
     )).thenReturn(mockedResult);
-    doThrow(PersonNotFoundException.class).when(gruppenService)
-        .addAusgabe(0L, "test", Money.of(10.02, "EUR"), "nutzer1",
-            Set.of("nutzer1", "existiertNicht"));
+    doThrow(PersonNotFoundException.class)
+        .when(gruppenService)
+        .addAusgabe(
+            0L,
+            "test",
+            Money.of(
+                10.02,
+                "EUR"
+            ),
+            "nutzer1",
+            Set.of(
+                "nutzer1",
+                "existiertNicht"
+            )
+        );
     mvc
         .perform(
             post("/gruppe/ausgabeHinzufuegen")
@@ -932,9 +962,12 @@ public class ControllerTest {
     )).thenReturn(mockedResult);
     MvcResult mvcResult = mvc
         .perform(get("/gruppe/personHinzufuegen?nr=0"))
-        .andExpect(status().is3xxRedirection()).andReturn();
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
 
-    assertThat(mvcResult.getResponse().getRedirectedUrl()).contains("/gruppe?nr=0");
+    assertThat(mvcResult
+        .getResponse()
+        .getRedirectedUrl()).contains("/gruppe?nr=0");
   }
 
   @Test
@@ -947,8 +980,15 @@ public class ControllerTest {
         "nutzer1",
         "Gruppe 1"
     );
-    mockedResult.addAusgabe("test", Money.of(10.02, "EUR"), "nutzer1",
-        Set.of("nutzer1"));
+    mockedResult.addAusgabe(
+        "test",
+        Money.of(
+            10.02,
+            "EUR"
+        ),
+        "nutzer1",
+        Set.of("nutzer1")
+    );
     when(gruppenService.getGruppeForGithubNameById(
         "nutzer1",
         0L
