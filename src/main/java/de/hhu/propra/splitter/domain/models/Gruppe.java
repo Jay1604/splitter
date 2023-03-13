@@ -2,11 +2,13 @@ package de.hhu.propra.splitter.domain.models;
 
 
 import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
+import de.hhu.propra.splitter.stereotypes.AggregateRoot;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.javamoney.moneta.Money;
 
+@AggregateRoot
 public class Gruppe {
 
   private Long id;

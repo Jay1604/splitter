@@ -1,5 +1,8 @@
 package de.hhu.propra.splitter.domain.models;
 
+import de.hhu.propra.splitter.stereotypes.Entity;
+
+@Entity
 public class Person {
 
   private String gitHubName;

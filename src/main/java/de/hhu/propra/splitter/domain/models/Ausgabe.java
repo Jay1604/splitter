@@ -1,9 +1,11 @@
 package de.hhu.propra.splitter.domain.models;
 
+import de.hhu.propra.splitter.stereotypes.Entity;
 import java.util.HashSet;
 import java.util.Set;
 import org.javamoney.moneta.Money;
 
+@Entity
 public class Ausgabe {
 
   private String beschreibung;
