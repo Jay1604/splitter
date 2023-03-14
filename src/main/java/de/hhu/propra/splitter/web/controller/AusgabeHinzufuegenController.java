@@ -19,9 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class AusgabeHinzufuegenController {
@@ -43,8 +43,15 @@ public class AusgabeHinzufuegenController {
   ) {
     m.addAttribute(
         "ausgabeHinzufuegenForm",
-        new AusgabeHinzufuegenForm(null, null, null, token.getPrincipal().getAttribute("login"),
-            null)
+        new AusgabeHinzufuegenForm(
+            null,
+            null,
+            null,
+            token
+                .getPrincipal()
+                .getAttribute("login"),
+            null
+        )
     );
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token
@@ -59,7 +66,11 @@ public class AusgabeHinzufuegenController {
       );
       m.addAttribute(
           "mitglieder",
-          gruppe.getMitglieder().stream().sorted().toList()
+          gruppe
+              .getMitglieder()
+              .stream()
+              .sorted()
+              .toList()
       );
       return "ausgabeHinzufuegen";
     }
@@ -91,7 +102,11 @@ public class AusgabeHinzufuegenController {
       );
       m.addAttribute(
           "mitglieder",
-          gruppe.getMitglieder().stream().sorted().toList()
+          gruppe
+              .getMitglieder()
+              .stream()
+              .sorted()
+              .toList()
       );
       return "ausgabeHinzufuegen";
     }
@@ -107,7 +122,7 @@ public class AusgabeHinzufuegenController {
 
     gruppenService.addAusgabe(
         ausgabeHinzufuegenForm.gruppeId(),
-        ausgabeHinzufuegenForm.beschreibung(),
+        HtmlUtils.htmlEscape(ausgabeHinzufuegenForm.beschreibung()),
         Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
         ausgabeHinzufuegenForm.glaeubiger(),
         ausgabeHinzufuegenForm.schuldner()
