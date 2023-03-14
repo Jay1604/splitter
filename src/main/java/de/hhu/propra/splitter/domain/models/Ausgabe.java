@@ -8,10 +8,10 @@ import org.javamoney.moneta.Money;
 @Entity
 public class Ausgabe {
 
-  private String beschreibung;
-  private Money betrag;
-  private Person glaeubiger;
-  private Set<Person> schuldner = new HashSet<>();
+  private final String beschreibung;
+  private final Money betrag;
+  private final Person glaeubiger;
+  private final Set<Person> schuldner = new HashSet<>();
 
   Ausgabe(
       String beschreibung,

@@ -4,9 +4,9 @@ import org.javamoney.moneta.Money;
 
 public class Ueberweisung {
 
-  Person empfaenger;
-  Person sender;
-  Money betrag;
+  final Person empfaenger;
+  final Person sender;
+  final Money betrag;
 
   public Ueberweisung(
       Person sender,

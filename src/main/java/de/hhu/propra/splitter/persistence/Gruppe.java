@@ -10,11 +10,11 @@ import org.springframework.data.annotation.PersistenceCreator;
 public class Gruppe {
 
   @Id
-  private Integer id;
-  private String gruppeName;
-  private Boolean offen;
-  private Set<Mitglied> mitglieder;
-  private Set<Ausgabe> ausgaben;
+  private final Integer id;
+  private final String gruppeName;
+  private final Boolean offen;
+  private final Set<Mitglied> mitglieder;
+  private final Set<Ausgabe> ausgaben;
 
   public Integer getId() {
     return id;

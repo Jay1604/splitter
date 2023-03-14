@@ -12,10 +12,10 @@ import org.javamoney.moneta.Money;
 public class Gruppe {
 
   private Long id;
-  private Set<Person> mitglieder;
-  private String name;
+  private final Set<Person> mitglieder;
+  private final String name;
   private boolean offen;
-  private Set<Ausgabe> ausgaben;
+  private final Set<Ausgabe> ausgaben;
 
   public Gruppe(
       Long id,

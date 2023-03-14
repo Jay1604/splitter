@@ -5,7 +5,7 @@ import de.hhu.propra.splitter.stereotypes.Entity;
 @Entity
 public class Person {
 
-  private String gitHubName;
+  private final String gitHubName;
 
   public String getGitHubName() {
     return gitHubName;
