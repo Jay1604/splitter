@@ -10,14 +10,15 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AusgleichService {
 
-  private HashMap<Person, Money> berechneSchulden(Gruppe gruppe) {
-    HashMap<Person, Money> schulden = new HashMap<>();
+  private TreeMap<Person, Money> berechneSchulden(Gruppe gruppe) {
+    TreeMap<Person, Money> schulden = new TreeMap<>();
     for (Ausgabe ausgabe : gruppe.getAusgaben()) {
       Money[] shareAndRemainder = ausgabe
           .getBetrag()
@@ -85,7 +86,7 @@ public class AusgleichService {
 
   public Set<Ueberweisung> berechneAusgleichUeberweisungen(Gruppe gruppe) {
     Set<Ueberweisung> ueberweisungen = new HashSet<>();
-    HashMap<Person, Money> schulden = berechneSchulden(gruppe);
+    TreeMap<Person, Money> schulden = berechneSchulden(gruppe);
     while (schulden
         .values()
         .stream()
@@ -106,7 +107,7 @@ public class AusgleichService {
 
   private void fillPerfectMatch(
       Set<Ueberweisung> ueberweisungen,
-      HashMap<Person, Money> debts
+      TreeMap<Person, Money> debts
   ) {
     for (var dept : debts.entrySet()) {
       if (dept
@@ -202,7 +203,7 @@ public class AusgleichService {
 
   private void fillGreedy(
       Set<Ueberweisung> ueberweisungen,
-      HashMap<Person, Money> debts
+      TreeMap<Person, Money> debts
   ) {
     Optional<Entry<Person, Money>> max = debts
         .entrySet()
