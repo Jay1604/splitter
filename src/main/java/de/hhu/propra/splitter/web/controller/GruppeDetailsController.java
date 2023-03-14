@@ -7,9 +7,8 @@ import de.hhu.propra.splitter.domain.services.AusgleichService;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.objects.AusgabeWebobject;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -42,7 +41,7 @@ public class GruppeDetailsController {
         username,
         gruppeId
     );
-    Set<AusgabeWebobject> ausgaben = gruppe
+    List<AusgabeWebobject> ausgaben = gruppe
         .getAusgaben()
         .stream()
         .map(
@@ -77,7 +76,7 @@ public class GruppeDetailsController {
                   )
               );
             })
-        .collect(Collectors.toSet());
+        .sorted(Comparator.comparing(AusgabeWebobject::glaeubiger)).toList();
     List<Person> persons = gruppe.getMitglieder().stream().sorted().toList();
     m.addAttribute(
         "gruppe",
@@ -92,7 +91,9 @@ public class GruppeDetailsController {
         ausgaben
     );
     AusgleichService ausgleichService = new AusgleichService();
-    Set<Ueberweisung> ueberweisungen = ausgleichService.berechneAusgleichUeberweisungen(gruppe);
+    List<Ueberweisung> ueberweisungen = ausgleichService.berechneAusgleichUeberweisungen(gruppe)
+        .stream().sorted(
+            Comparator.comparing(a -> a.getSender().getGitHubName())).toList();
     m.addAttribute(
         "ueberweisungen",
         ueberweisungen

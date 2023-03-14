@@ -38,10 +38,14 @@ public class AusgabeHinzufuegenController {
   @GetMapping("/gruppe/ausgabeHinzufuegen")
   public String ausgabeHinzufuegenView(
       Model m,
-      @ModelAttribute AusgabeHinzufuegenForm ausgabeHinzufuegenForm,
       OAuth2AuthenticationToken token,
       @RequestParam(value = "nr") long gruppeId
   ) {
+    m.addAttribute(
+        "ausgabeHinzufuegenForm",
+        new AusgabeHinzufuegenForm(null, null, null, token.getPrincipal().getAttribute("login"),
+            null)
+    );
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token
             .getPrincipal()
@@ -55,7 +59,7 @@ public class AusgabeHinzufuegenController {
       );
       m.addAttribute(
           "mitglieder",
-          gruppe.getMitglieder()
+          gruppe.getMitglieder().stream().sorted().toList()
       );
       return "ausgabeHinzufuegen";
     }
@@ -87,7 +91,7 @@ public class AusgabeHinzufuegenController {
       );
       m.addAttribute(
           "mitglieder",
-          gruppe.getMitglieder()
+          gruppe.getMitglieder().stream().sorted().toList()
       );
       return "ausgabeHinzufuegen";
     }
