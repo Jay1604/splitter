@@ -7,6 +7,7 @@ import de.hhu.propra.splitter.exceptions.PersonNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.AusgabeHinzufuegenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.math.BigDecimal;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.javamoney.moneta.Money;
@@ -109,6 +110,37 @@ public class AusgabeHinzufuegenController {
       );
       return "ausgabeHinzufuegen";
     }
+    // Check if input is greater than Postgres bigint / 100 - 1
+    if (
+        new BigDecimal(ausgabeHinzufuegenForm.betrag())
+            .compareTo(new BigDecimal(92233720368547757L)) > 0
+    ) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
+          token
+              .getPrincipal()
+              .getAttribute("login"),
+          ausgabeHinzufuegenForm.gruppeId()
+      );
+      m.addAttribute(
+          "gruppeId",
+          ausgabeHinzufuegenForm.gruppeId()
+      );
+      m.addAttribute(
+          "mitglieder",
+          gruppe
+              .getMitglieder()
+              .stream()
+              .sorted()
+              .toList()
+      );
+      bindingResult.rejectValue(
+          "betrag",
+          "error.betrag",
+          "Wert zu groß"
+      );
+      return "ausgabeHinzufuegen";
+    }
     Gruppe gruppe = gruppenService.getGruppeForGithubNameById(
         token
             .getPrincipal()
@@ -121,7 +153,8 @@ public class AusgabeHinzufuegenController {
 
     gruppenService.addAusgabe(
         ausgabeHinzufuegenForm.gruppeId(),
-        // HtmlUtils.htmlEscape(ausgabeHinzufuegenForm.beschreibung()), // Hier oder in Thymeleaf escape?
+        // Hier oder in Thymeleaf escapen?
+        // HtmlUtils.htmlEscape(ausgabeHinzufuegenForm.beschreibung()),
         ausgabeHinzufuegenForm.beschreibung(),
         Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
         ausgabeHinzufuegenForm.glaeubiger(),

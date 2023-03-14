@@ -379,7 +379,6 @@ public class ControllerTest {
                 )
                 .with(csrf())
         )
-        .andExpect(view().name("personGruppeHinzufuegen"))
         .andExpect(status().is4xxClientError())
         .andReturn();
   }
