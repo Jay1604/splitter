@@ -3,6 +3,7 @@ package de.hhu.propra.splitter.web.controller;
 import de.hhu.propra.splitter.domain.models.Gruppe;
 import de.hhu.propra.splitter.exceptions.GruppeGeschlossenException;
 import de.hhu.propra.splitter.exceptions.GruppeHasAusgabenException;
+import de.hhu.propra.splitter.exceptions.GruppeNotFoundException;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.forms.PersonGruppeHinzufuegenForm;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -67,6 +68,13 @@ public class PersonGruppeHinzufuegenController {
       BindingResult bindingResult,
       HttpServletResponse response
   ) {
+    if (form.id() == null) {
+      throw new GruppeNotFoundException();
+    }
+    m.addAttribute(
+        "gruppeID",
+        form.id()
+    );
     if (bindingResult.hasErrors()) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return "personGruppeHinzufuegen";
