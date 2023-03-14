@@ -7,6 +7,7 @@ import de.hhu.propra.splitter.domain.services.AusgleichService;
 import de.hhu.propra.splitter.services.GruppenService;
 import de.hhu.propra.splitter.web.objects.AusgabeWebobject;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +78,14 @@ public class GruppeDetailsController {
               );
             })
         .collect(Collectors.toSet());
+    List<Person> persons = gruppe.getMitglieder().stream().sorted().toList();
     m.addAttribute(
         "gruppe",
         gruppe
+    );
+    m.addAttribute(
+        "mitglieder",
+        persons
     );
     m.addAttribute(
         "ausgaben",

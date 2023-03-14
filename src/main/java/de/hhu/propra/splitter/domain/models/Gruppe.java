@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.javamoney.moneta.Money;
 
 @AggregateRoot
-public class Gruppe {
+public class Gruppe implements Comparable<Gruppe> {
 
   private Long id;
   private final Set<Person> mitglieder;
@@ -88,5 +88,29 @@ public class Gruppe {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Gruppe gruppe = (Gruppe) o;
+
+    return id != null ? id.equals(gruppe.id) : gruppe.id == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return id != null ? id.hashCode() : 0;
+  }
+
+  @Override
+  public int compareTo(Gruppe o) {
+    return this.name.compareTo(o.name);
   }
 }

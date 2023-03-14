@@ -41,7 +41,7 @@
       <h2>Nutzer</h2>
       <ul class="list-group" th:remove="all-but-first">
         <li class="list-group-item list-group-item-action"
-            th:each="mitglied: ${gruppe.getMitglieder()}">
+            th:each="mitglied: ${mitglieder}">
           <span th:text="${mitglied.getGitHubName()}">Andrew</span>
         </li>
         <li class="list-group-item list-group-item-action">
