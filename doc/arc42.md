@@ -49,10 +49,23 @@ Schnittstelle um Benutzer zu Authentifizieren. Die Zuordnung erfolgt über den G
 
 ![Architektur](arch.png)
 
-# Architekturentscheidungen
+# Entscheidungen
+
+## Ausgleich Algorithmus
+Zuerst werden die Schulden pro Person der Gruppe berechnet. Daraus entstehen zwei Gruppen; die Schuldner
+und die Gläubiger. Anschliessend solange wie noch Schulden auszugleichen sind, werden erst perfekte Paare gesucht
+und dann greedy aufgefüllt. Perfekte Paare bedeutet, dass für einen Gläubiger oder Schuldner alle möglichen Kombinationen gesucht werden,
+um die Schulden in Summe auszugleichen. 
+
+Beispiel:
+Person A bekommt 30 Euro und es gibt drei Personen die 10 Euro zahlen müssen, dann würde dies als perfektes Paar gelten.
+
+## Architekturentscheidungen
 
 Dieses Projekt verwendet die Onion-Architektur. Dies wird erreicht, indem das Programm in die 
 Packages web, domain, persistence und services aufgeteilt und auf lose Abhängigkeiten geachtet wird.
 
 Dabei zeigen Abhängigkeiten immer nur nach innen. 
+
+
 
