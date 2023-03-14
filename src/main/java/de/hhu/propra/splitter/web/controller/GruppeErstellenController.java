@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class GruppeErstellenController {
@@ -45,7 +44,8 @@ public class GruppeErstellenController {
         token
             .getPrincipal()
             .getAttribute("login"),
-        HtmlUtils.htmlEscape(gruppeErstellenForm.name())
+        // HtmlUtils.htmlEscape(gruppeErstellenForm.name()) Hier oder in Thymeleaf escape?
+        gruppeErstellenForm.name()
     );
 
     return "redirect:/";

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class AusgabeHinzufuegenController {
@@ -122,7 +121,8 @@ public class AusgabeHinzufuegenController {
 
     gruppenService.addAusgabe(
         ausgabeHinzufuegenForm.gruppeId(),
-        HtmlUtils.htmlEscape(ausgabeHinzufuegenForm.beschreibung()),
+        // HtmlUtils.htmlEscape(ausgabeHinzufuegenForm.beschreibung()), // Hier oder in Thymeleaf escape?
+        ausgabeHinzufuegenForm.beschreibung(),
         Money.parse("EUR " + ausgabeHinzufuegenForm.betrag()),
         ausgabeHinzufuegenForm.glaeubiger(),
         ausgabeHinzufuegenForm.schuldner()

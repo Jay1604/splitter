@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class PersonGruppeHinzufuegenController {
@@ -94,7 +93,8 @@ public class PersonGruppeHinzufuegenController {
       throw new GruppeHasAusgabenException();
     }
     gruppenService.addPersonToGruppe(
-        HtmlUtils.htmlEscape(form.name()),
+        // HtmlUtils.htmlEscape(form.name()),
+        form.name(),
         form.id()
     );
     return "redirect:/gruppe?nr=" + form.id();
