@@ -39,6 +39,17 @@ public class ControllerTest {
   @MockBean
   GruppenService gruppenService;
 
+  void testNonAuthenticatedUserAccess(String url) throws Exception {
+    MvcResult mvcResult = mvc
+        .perform(get(url))
+        .andExpect(status().is3xxRedirection())
+        .andReturn();
+    assertThat(mvcResult
+        .getResponse()
+        .getRedirectedUrl())
+        .contains("oauth2/authorization/github");
+  }
+
   @Test
   @WithMockOAuth2User(login = "nutzer1")
   @DisplayName("Route / gibt 200 zurück")
@@ -51,15 +62,7 @@ public class ControllerTest {
   @Test
   @DisplayName("Die private Seite / ist für nicht-authentifizierte User nicht erreichbar")
   void test_2() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/");
   }
 
   @Test
@@ -75,15 +78,7 @@ public class ControllerTest {
   @DisplayName("Die private Seite /gruppe/erstellen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_4() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/gruppe/erstellen"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/gruppe/erstellen");
   }
 
   @Test
@@ -172,15 +167,7 @@ public class ControllerTest {
         0L
     )).thenReturn(mockedResult);
 
-    MvcResult mvcResult = mvc
-        .perform(get("/"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/gruppe?nr=0");
   }
 
   @Test
@@ -219,15 +206,7 @@ public class ControllerTest {
   @DisplayName("Die private Seite /gruppe/schliessen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_11() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/gruppe/schliessen?nr=0"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/gruppe/schliessen?nr=0");
   }
 
   @Test
@@ -307,14 +286,7 @@ public class ControllerTest {
   @DisplayName("Die private Seite /gruppe/personHinzufuegen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_15() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/gruppe/personHinzufuegen?nr=0"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
+    testNonAuthenticatedUserAccess("/gruppe/personHinzufuegen?nr=0");
 
   }
 
@@ -437,15 +409,7 @@ public class ControllerTest {
   @DisplayName("Die private Seite /gruppe/ausgabeHinzufuegen ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_20() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/gruppe/ausgabeHinzufuegen?nr=0"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/gruppe/ausgabeHinzufuegen?nr=0");
   }
 
   @Test
@@ -763,15 +727,7 @@ public class ControllerTest {
   @DisplayName("Die private Seite /meineUebersicht ist für "
       + "nicht-authentifizierte User nicht erreichbar")
   void test_28() throws Exception {
-    MvcResult mvcResult = mvc
-        .perform(get("/meineUebersicht"))
-        .andExpect(status().is3xxRedirection())
-        .andReturn();
-    assertThat(mvcResult
-        .getResponse()
-        .getRedirectedUrl())
-        .contains("oauth2/authorization/github");
-
+    testNonAuthenticatedUserAccess("/meineUebersicht");
   }
 
   @Test
