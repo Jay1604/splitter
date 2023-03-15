@@ -7,25 +7,28 @@ import java.util.Set;
 class CombinationHelper {
 
   public static <T> Set<Set<T>> allCombinationsOf(List<T> items) {
-    return addAndNot(new HashSet<Set<T>>(
-        Set.of(new HashSet<>())
-    ), items);
+    return addAndNot(
+        new HashSet<Set<T>>(
+            Set.of(new HashSet<>())
+        ),
+        items
+    );
   }
 
-  private static <T> Set<Set<T>> addAndNot(Set<Set<T>> combinations,
-      List<T> items) {
-    // TODO: Change to while loop instead of recursion
-    if (items.size() == 0) {
-      return combinations;
+  private static <T> Set<Set<T>> addAndNot(
+      Set<Set<T>> combinations,
+      List<T> items
+  ) {
+    int i = 0;
+    while (i != items.size()) {
+      var combinationsWithNewNumber = copySet(combinations);
+      int finalI = i;
+      combinationsWithNewNumber.forEach(combination -> combination.add(items.get(finalI)));
+      combinations.addAll(combinationsWithNewNumber);
+      i++;
     }
-    var combinationsWithNewElement = copySet(combinations);
-    combinationsWithNewElement.forEach(combination -> combination.add(items.get(0)));
-    var combinationsWithoutNewElement = copySet(combinations);
-    Set<Set<T>> result = new HashSet<>();
-    result.addAll(combinationsWithNewElement);
-    result.addAll(combinationsWithoutNewElement);
 
-    return addAndNot(result, items.stream().skip(1).toList());
+    return combinations;
   }
 
   private static <T> Set<Set<T>> copySet(Set<Set<T>> orig) {
