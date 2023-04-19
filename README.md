@@ -4,7 +4,7 @@ Eine minimalistische Anwendung zur Verwaltung von Ausgaben in Gruppen.
 
 ## Installation und Konfiguration
 
-- Download: `git clone https://github.com/hhu-propra2-ws22/projekt_gruppe_19`
+- Download: `git clone https://github.com/Jay1604/splitter`
 - GitHub Application
   erstellen: https://docs.github.com/de/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
 - Umgebungsvariablen setzen
