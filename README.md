@@ -2,7 +2,7 @@
 
 Eine minimalistische Anwendung zur Verwaltung von Ausgaben in Gruppen.
 
-## Vorraussetzunger
+## Vorraussetzungen
 
 - Docker
 - pass
