@@ -2,6 +2,12 @@
 
 Eine minimalistische Anwendung zur Verwaltung von Ausgaben in Gruppen.
 
+## Vorraussetzungen
+
+- Docker
+- pass
+- gnupgp
+
 ## Installation und Konfiguration
 
 - Download: `git clone https://github.com/Jay1604/splitter`
