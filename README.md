@@ -7,6 +7,9 @@ Eine minimalistische Anwendung zur Verwaltung von Ausgaben in Gruppen.
 - Download: `git clone https://github.com/Jay1604/splitter`
 - GitHub Application
   erstellen: https://docs.github.com/de/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
+    - als callback url muss http://domain.tld/login/oauth2/code/github verwendet werden
+    - direktes htttps wird hier nicht unterstützt. muss von reverse proxy gehandelt werden
+
 - Umgebungsvariablen setzen
 - Es kann notwendig sein vor dem ersten Start `docker compose build` auszuführen
 - Start der Software `docker compose up`
